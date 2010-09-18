@@ -237,6 +237,7 @@ main (int argc, char **argv)
                                  gdk_screen_width (),
                                  GGTRAYBAR_HEIGHT);
 
+    gtk_widget_set_name (window, "PanelWidget");
     gtk_widget_show_all (window);
 
     intern_x_atoms ();
