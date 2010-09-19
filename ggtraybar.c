@@ -43,6 +43,25 @@ intern_x_atoms (void)
 }
 
 
+/*
+ * Defines for setting _NET_WM_STRUT(_PARTIAL)
+ */
+#define NET_WM_STRUT_LEFT             0
+#define NET_WM_STRUT_RIGHT            1
+#define NET_WM_STRUT_TOP              2
+#define NET_WM_STRUT_BOTTOM           3
+#define NET_WM_STRUT_LEFT_START_Y     4
+#define NET_WM_STRUT_LEFT_END_Y       5
+#define NET_WM_STRUT_RIGHT_START_Y    6
+#define NET_WM_STRUT_RIGHT_END_Y      7
+#define NET_WM_STRUT_TOP_START_X      8
+#define NET_WM_STRUT_TOP_END_X        9
+#define NET_WM_STRUT_BOTTOM_START_X  10
+#define NET_WM_STRUT_BOTTOM_END_X    11
+#define NET_WM_STRUT_NELEM           12
+#define NET_WM_STRUT_COMPAT_NELEM     4
+
+
 static void
 configure_window (GtkWindow *w)
 {
@@ -67,13 +86,14 @@ configure_window (GtkWindow *w)
 static void
 set_xwin_properties (GtkWindow *w)
 {
-#if 0
     Window xwin = GDK_WINDOW_XWINDOW (gtk_widget_get_window (GTK_WIDGET (w)));
-    gulong data[12] = { 0 };
+    gulong data[NET_WM_STRUT_NELEM];
 
-    data[2]       = gdk_screen_width ();
-    data[4 + 2*2] = 0;
-    data[5 + 2*2] = 0 + GGTRAYBAR_HEIGHT;
+    memset (data, 0x00, sizeof (gulong) * NET_WM_STRUT_NELEM);
+
+    data[NET_WM_STRUT_TOP]         = GGTRAYBAR_HEIGHT;
+    data[NET_WM_STRUT_TOP_START_X] = 0;
+    data[NET_WM_STRUT_TOP_END_X]   = gdk_screen_width ();
 
     XChangeProperty (GDK_DISPLAY (),
                      xwin,
@@ -82,7 +102,7 @@ set_xwin_properties (GtkWindow *w)
                      32,
                      PropModeReplace,
                      (unsigned char*) data,
-                     12);
+                     NET_WM_STRUT_NELEM);
 
     XChangeProperty (GDK_DISPLAY (),
                      xwin,
@@ -91,11 +111,10 @@ set_xwin_properties (GtkWindow *w)
                      32,
                      PropModeReplace,
                      (unsigned char*) data,
-                     4);
+                     NET_WM_STRUT_COMPAT_NELEM);
 
     XMoveWindow (GDK_DISPLAY (), xwin, 0, 0);
     XSync (GDK_DISPLAY (), False);
-#endif
 
     gtk_window_move (w, 0, 0);
 }
