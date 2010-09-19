@@ -54,7 +54,8 @@ struct ggtraybar_s {
 typedef struct ggtraybar_s ggtraybar_t;
 
 
-GtkWidget* ggt_tray_init (ggtraybar_t *app);
+GtkWidget* ggt_tray_init       (ggtraybar_t *app);
+GtkWidget* ggt_globalmenu_init (ggtraybar_t *app);
 
 
 #endif /* !__ggtraybar_h__ */

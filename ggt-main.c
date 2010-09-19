@@ -20,7 +20,7 @@
 
 #include <gtk/gtk.h>
 #include <stdlib.h>
-#include <gnome-globalmenu/globalmenu-server.h>
+#include <string.h>
 #include "ggt.h"
 
 static GdkAtom a_NET_WM_STRUT_PARTIAL = 0;
@@ -96,7 +96,6 @@ set_window_properties (GtkWindow *w)
 int
 main (int argc, char **argv)
 {
-    GnomenuGlobalMenuBar *menubar;
     GtkWidget *gadget = NULL;
     GtkWidget *hbox;
 
@@ -112,15 +111,22 @@ main (int argc, char **argv)
 
     configure_window (GTK_WINDOW (app.window));
 
-    menubar = gnomenu_global_menu_bar_new ();
-
+    /*
+     * Now create a GtkHBox where all gadgets will be added, and then
+     * proceed to add all desired widgets to it. Note that:
+     *
+     *  - The set of available gadgets is fixed.
+     *  - The layout of the gadgets is fixed.
+     *  - The order of the gadgets is fixed.
+     *
+     * Why? Because I want them that way... and less is more :-)
+     */
     hbox = gtk_hbox_new (FALSE, 5);
 
-    gtk_box_pack_start (GTK_BOX (hbox),
-                        GTK_WIDGET (menubar),
-                        FALSE,
-                        FALSE,
-                        0);
+
+    /* Add global menu widget. */
+    if ((gadget = ggt_globalmenu_init (&app)))
+        gtk_box_pack_start (GTK_BOX (hbox), gadget, FALSE, FALSE, 0);
 
     /* Add tray widget, if it can be initialized. */
     if ((gadget = ggt_tray_init (&app)))
@@ -138,13 +144,17 @@ main (int argc, char **argv)
                                  gdk_screen_width (),
                                  GGT_HEIGHT);
 
+    /*
+     * This makes the panel use the same GtkRc styles than those used by the
+     * GNOME panel, so themes which modify the panel should blend finely.
+     */
     gtk_widget_set_name (app.window, "PanelWidget");
-    gtk_widget_show_all (app.window);
 
     /*
-     * Now that we have the window mapped, we are sure that GDK_SCREEN()
+     * After having the window mapped, we are sure that GDK_SCREEN()
      * will return something sane, so intern atoms and set X properties.
      */
+    gtk_widget_show_all (app.window);
     intern_atoms ();
     set_window_properties (GTK_WINDOW (app.window));
 
