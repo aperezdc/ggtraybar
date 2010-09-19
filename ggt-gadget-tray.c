@@ -25,9 +25,13 @@
 static void
 tray_changed (GtkWidget *widget)
 {
+    GtkAllocation allocation;
+
+    gtk_widget_get_allocation (widget, &allocation);
+
     gtk_widget_set_size_request (widget,
-                                 widget->allocation.width,
-                                 widget->allocation.height);
+                                 allocation.width,
+                                 allocation.height);
 
     gtk_widget_hide (widget);
 

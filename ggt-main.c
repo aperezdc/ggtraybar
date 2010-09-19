@@ -28,9 +28,6 @@ static GdkAtom a_NET_WM_STRUT         = 0;
 static GdkAtom a_XA_CARDINAL          = 0;
 
 
-#define INTERN(_n) \
-     gdk_atom_intern_static_string (#_n)
-
 static void
 intern_atoms (void)
 {
