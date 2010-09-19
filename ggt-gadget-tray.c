@@ -19,6 +19,7 @@
  */
 
 #include "ggt.h"
+#include "fixedtip.h"
 #include "eggtraymanager.h"
 
 
@@ -81,6 +82,14 @@ message_sent (EggTrayManager *traymgr,
               glong           timeout,
               void           *data)
 {
+    gint x, y;
+
+    g_assert (traymgr);
+    g_assert (icon);
+    g_assert (text);
+
+    gdk_window_get_origin (gtk_widget_get_window (icon), &x, &y);
+    fixed_tip_show (0, x, y, FALSE, gdk_screen_height () - 50, text);
 }
 
 
