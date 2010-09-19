@@ -6,8 +6,10 @@
 SRCS := $(wildcard *.c)
 OBJS := $(patsubst %.c,%.o,$(SRCS))
 
-PKG_CFLAGS := $(shell pkg-config glib-2.0 gtk+-2.0 globalmenu-server --cflags)
-PKG_LDLIBS := $(shell pkg-config glib-2.0 gtk+-2.0 globalmenu-server --libs)
+PKG_MODULE := glib-2.0 gtk+-2.0 globalmenu-server libwnck-1.0
+
+PKG_CFLAGS := $(shell pkg-config $(PKG_MODULE) --cflags)
+PKG_LDLIBS := $(shell pkg-config $(PKG_MODULE) --libs)
 
 LDFLAGS   += $(subst -lserver,-lglobalmenu-server,$(PKG_LDLIBS))
 CFLAGS    += $(PKG_CFLAGS) -DGSEAL_ENABLE

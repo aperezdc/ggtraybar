@@ -73,14 +73,14 @@ set_window_properties (GtkWindow *w)
                          a_NET_WM_STRUT_PARTIAL,
                          a_XA_CARDINAL, 32,
                          GDK_PROP_MODE_REPLACE,
-                         (const gchar*) data,
+                         (const guchar*) data,
                          NET_WM_STRUT_NELEM);
 
     gdk_property_change (window,
                          a_NET_WM_STRUT,
                          a_XA_CARDINAL, 32,
                          GDK_PROP_MODE_REPLACE,
-                         (const gchar*) data,
+                         (const guchar*) data,
                          NET_WM_STRUT_COMPAT_NELEM);
 
     gtk_window_move (w, 0, 0);
@@ -92,8 +92,6 @@ set_window_properties (GtkWindow *w)
 int
 main (int argc, char **argv)
 {
-    GtkWidget *gadget = NULL;
-    GtkWidget *extra;
     GtkWidget *hbox;
 
     ggtraybar_t app;
@@ -121,18 +119,17 @@ main (int argc, char **argv)
     hbox = gtk_hbox_new (FALSE, 5);
 
 
-    /* Add global menu widget. */
-    if ((gadget = ggt_globalmenu_init (&app)))
-        gtk_box_pack_start (GTK_BOX (hbox), gadget, FALSE, FALSE, 0);
+#define GADGET(_box, _pos, _gad)                                             \
+    do {                                                                     \
+        GtkWidget *gadget = (_gad);                                          \
+        if (gadget)                                                          \
+            gtk_box_pack_ ## _pos (GTK_BOX (_box), gadget, FALSE, FALSE, 0); \
+    } while (0)
 
-    /* Add clock gadget. */
-    if ((gadget = ggt_clock_init (&app))) {
-        gtk_box_pack_end (GTK_BOX (hbox), gadget, FALSE, FALSE, 0);
-    }
-
-    /* Add tray widget, if it can be initialized. */
-    if ((gadget = ggt_tray_init (&app)))
-        gtk_box_pack_end (GTK_BOX (hbox), gadget, FALSE, FALSE, 0);
+    GADGET (hbox, start, ggt_globalmenu_init (&app));
+    GADGET (hbox, end,   ggt_clock_init      (&app));
+    GADGET (hbox, end,   ggt_tray_init       (&app));
+    GADGET (hbox, end,   ggt_pager_init      (&app));
 
     /*
      * Finished adding widgets to the panel.
