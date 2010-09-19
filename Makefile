@@ -12,15 +12,12 @@ PKG_LDLIBS := $(shell pkg-config glib-2.0 gtk+-2.0 globalmenu-server --libs)
 LDFLAGS   += $(subst -lserver,-lglobalmenu-server,$(PKG_LDLIBS))
 CFLAGS    += $(PKG_CFLAGS) -DGSEAL_ENABLE
 
-all: ggtraybar
+all: ggt
 
-ggt-main: $(OBJS)
-.SECONDARY: ggt-main
-ggtraybar: ggt-main
-	ln $< $@
+ggt: $(OBJS)
 
 clean:
-	$(RM) ggtraybar $(OBJS)
+	$(RM) $(OBJS) ggt
 
 # vim:ft=make
 #

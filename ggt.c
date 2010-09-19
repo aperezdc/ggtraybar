@@ -1,5 +1,5 @@
 /*
- * ggt-main.c
+ * ggt.c
  * Copyright (C) 2010 Adrian Perez <aperez@igalia.com>
  *
  * This library is free software; you can redistribute it and/or
