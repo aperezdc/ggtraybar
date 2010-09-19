@@ -35,11 +35,14 @@ static Atom a_NET_WM_STRUT_PARTIAL = 0;
 static Atom a_NET_WM_STRUT         = 0;
 
 
+#define INTERN(_n) \
+    a ## _n = XInternAtom (GDK_DISPLAY (), #_n, False)
+
 static void
 intern_x_atoms (void)
 {
-    a_NET_WM_STRUT_PARTIAL = XInternAtom (GDK_DISPLAY (), "_NET_WM_STRUT_PARTIAL", False);
-    a_NET_WM_STRUT         = XInternAtom (GDK_DISPLAY (), "_NET_WM_STRUT",         False);
+    INTERN (_NET_WM_STRUT_PARTIAL);
+    INTERN (_NET_WM_STRUT);
 }
 
 
