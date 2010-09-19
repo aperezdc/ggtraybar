@@ -12,7 +12,10 @@ PKG_CFLAGS := $(shell pkg-config $(PKG_MODULE) --cflags)
 PKG_LDLIBS := $(shell pkg-config $(PKG_MODULE) --libs)
 
 LDFLAGS   += $(subst -lserver,-lglobalmenu-server,$(PKG_LDLIBS))
-CFLAGS    += $(PKG_CFLAGS) -DGSEAL_ENABLE
+CFLAGS    += $(PKG_CFLAGS) \
+						 -DGSEAL_ENABLE \
+						 -DGTK_DISABLE_DEPRECATED \
+						 -DGDK_DISABLE_DEPRECATED
 
 all: ggt
 
