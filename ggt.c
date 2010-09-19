@@ -18,10 +18,9 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include <gtk/gtk.h>
+#include "ggt.h"
 #include <stdlib.h>
 #include <string.h>
-#include "ggt.h"
 
 static GdkAtom a_NET_WM_STRUT_PARTIAL = 0;
 static GdkAtom a_NET_WM_STRUT         = 0;
@@ -94,6 +93,7 @@ int
 main (int argc, char **argv)
 {
     GtkWidget *gadget = NULL;
+    GtkWidget *extra;
     GtkWidget *hbox;
 
     ggtraybar_t app;
@@ -125,10 +125,14 @@ main (int argc, char **argv)
     if ((gadget = ggt_globalmenu_init (&app)))
         gtk_box_pack_start (GTK_BOX (hbox), gadget, FALSE, FALSE, 0);
 
+    /* Add clock gadget. */
+    if ((gadget = ggt_clock_init (&app))) {
+        gtk_box_pack_end (GTK_BOX (hbox), gadget, FALSE, FALSE, 0);
+    }
+
     /* Add tray widget, if it can be initialized. */
     if ((gadget = ggt_tray_init (&app)))
         gtk_box_pack_end (GTK_BOX (hbox), gadget, FALSE, FALSE, 0);
-
 
     /*
      * Finished adding widgets to the panel.
