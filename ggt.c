@@ -58,7 +58,7 @@ configure_window (GtkWindow *w)
 
 
 static void
-set_window_properties (GtkWindow *w)
+set_window_properties (GtkWindow *w, ggtraybar_t *app)
 {
     GdkWindow *window = gtk_widget_get_window (GTK_WIDGET (w));
     gulong data[NET_WM_STRUT_NELEM];
@@ -66,8 +66,9 @@ set_window_properties (GtkWindow *w)
     memset (data, 0x00, sizeof (gulong) * NET_WM_STRUT_NELEM);
 
     data[NET_WM_STRUT_TOP]         = GGT_HEIGHT;
-    data[NET_WM_STRUT_TOP_START_X] = 0;
-    data[NET_WM_STRUT_TOP_END_X]   = gdk_screen_width ();
+    data[NET_WM_STRUT_TOP_START_X] = app->primary_monitor.x;
+    data[NET_WM_STRUT_TOP_END_X]   = app->primary_monitor.x
+                                   + app->primary_monitor.width;
 
     gdk_property_change (window,
                          a_NET_WM_STRUT_PARTIAL,
@@ -83,7 +84,7 @@ set_window_properties (GtkWindow *w)
                          (const guchar*) data,
                          NET_WM_STRUT_COMPAT_NELEM);
 
-    gtk_window_move (w, 0, 0);
+    gtk_window_move (w, app->primary_monitor.x, 0);
     gdk_display_sync (gtk_widget_get_display (GTK_WIDGET (w)));
 }
 
@@ -103,6 +104,10 @@ main (int argc, char **argv)
 
     app.window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
     app.screen = gtk_widget_get_screen (app.window);
+
+    gdk_screen_get_monitor_geometry (app.screen,
+                                     gdk_screen_get_primary_monitor (app.screen),
+                                     &app.primary_monitor);
 
     configure_window (GTK_WINDOW (app.window));
 
@@ -139,7 +144,7 @@ main (int argc, char **argv)
                        GTK_WIDGET (hbox));
 
     gtk_widget_set_size_request (app.window,
-                                 gdk_screen_width (),
+                                 app.primary_monitor.width,
                                  GGT_HEIGHT);
 
     /*
@@ -154,7 +159,7 @@ main (int argc, char **argv)
      */
     gtk_widget_show_all (app.window);
     intern_atoms ();
-    set_window_properties (GTK_WINDOW (app.window));
+    set_window_properties (GTK_WINDOW (app.window), &app);
 
     gtk_main ();
 

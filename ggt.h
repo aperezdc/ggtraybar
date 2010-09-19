@@ -45,11 +45,13 @@
 
 
 #include <gtk/gtk.h>
+#include <gdk/gdk.h>
 
 
 struct ggtraybar_s {
-    GtkWidget *window;
-    GdkScreen *screen;
+    GtkWidget    *window;
+    GdkScreen    *screen;
+    GdkRectangle  primary_monitor;
 };
 typedef struct ggtraybar_s ggtraybar_t;
 
