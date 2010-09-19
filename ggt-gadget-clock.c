@@ -43,10 +43,46 @@ clock_tick_update (void *data)
 }
 
 
-static gboolean
-on_click_show_calendar (GtkWidget *widget, GdkEventButton *event, void *priv)
+static GtkWidget*
+make_calendar_window (void)
 {
-    return TRUE;
+    GtkWidget *window   = gtk_window_new (GTK_WINDOW_TOPLEVEL);
+    GtkWidget *calendar = gtk_calendar_new ();
+
+    gtk_window_set_default_size      (GTK_WINDOW (window), 180, 180);
+    gtk_window_set_decorated         (GTK_WINDOW (window), FALSE);
+    gtk_window_set_resizable         (GTK_WINDOW (window), FALSE);
+    gtk_window_set_skip_taskbar_hint (GTK_WINDOW (window), TRUE);
+    gtk_window_set_skip_pager_hint   (GTK_WINDOW (window), TRUE);
+    gtk_window_set_position          (GTK_WINDOW (window), GTK_WIN_POS_MOUSE);
+    gtk_window_stick                 (GTK_WINDOW (window));
+
+    gtk_calendar_display_options (GTK_CALENDAR (calendar),
+                                  GTK_CALENDAR_SHOW_WEEK_NUMBERS |
+                                  GTK_CALENDAR_SHOW_DAY_NAMES |
+                                  GTK_CALENDAR_SHOW_HEADING);
+
+    gtk_container_set_border_width (GTK_CONTAINER (window), 5);
+    gtk_container_add (GTK_CONTAINER (window), calendar);
+
+    return window;
+}
+
+
+static void
+on_calendar_toggle (GtkToggleButton *button, gpointer data)
+{
+    GtkWidget *calendar;
+
+    g_assert (button);
+    g_assert (data);
+
+    calendar = GTK_WIDGET (data);
+
+    if (gtk_toggle_button_get_active (button))
+        gtk_widget_show_all (calendar);
+    else
+        gtk_widget_hide (calendar);
 }
 
 
@@ -54,6 +90,7 @@ GtkWidget*
 ggt_clock_init (ggtraybar_t *app)
 {
     GtkWidget *button = gtk_toggle_button_new_with_label ("HH:MM");
+    GtkWidget *calwin = make_calendar_window ();
 
     g_assert (app);
 
@@ -62,10 +99,9 @@ ggt_clock_init (ggtraybar_t *app)
 
     clock_tick_update (button);
 
-    g_signal_connect (G_OBJECT (button),
-                      "clicked",
-                      G_CALLBACK (on_click_show_calendar),
-                      NULL);
+    g_signal_connect (G_OBJECT (button), "toggled",
+                      G_CALLBACK (on_calendar_toggle),
+                      calwin);
 
     g_timeout_add (1000, (GSourceFunc) clock_tick_update, button);
 
