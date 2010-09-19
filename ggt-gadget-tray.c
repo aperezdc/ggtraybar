@@ -1,11 +1,24 @@
 /*
- * ggtray.c
+ * ggt-gadget-tray.c
  * Copyright (C) 2010 Adrian Perez <aperez@igalia.com>
  *
- * Distributed under terms of the MIT license.
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA 02111-1307, USA.
  */
 
-#include "ggtraybar.h"
+#include "ggt.h"
 #include "eggtraymanager.h"
 
 
@@ -76,18 +89,10 @@ message_cancel (EggTrayManager *traymgr,
 }
 
 
-static GtkWidget*
-make_traybar_widget (EggTrayManager *traymgr)
-{
-    GtkWidget *traybox;
-
-    g_assert (traymgr);
-
-}
 
 
 GtkWidget*
-gg_tray_init (ggtraybar_t *app)
+ggt_tray_init (ggtraybar_t *app)
 {
     EggTrayManager *traymgr;
     GtkWidget *gadget;
@@ -126,7 +131,9 @@ gg_tray_init (ggtraybar_t *app)
                       G_CALLBACK (message_cancel),
                       gadget);
 
-    g_object_set_data (gadget, "traymanager", traymgr);
+    g_object_set_data (G_OBJECT (gadget),
+                       "traymanager",
+                       traymgr);
 
     return gadget;
 }

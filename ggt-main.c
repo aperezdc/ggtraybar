@@ -1,5 +1,5 @@
 /*
- * ggtraybar.c
+ * ggt-main.c
  * Copyright (C) 2010 Adrian Perez <aperez@igalia.com>
  *
  * This library is free software; you can redistribute it and/or
@@ -21,7 +21,7 @@
 #include <gtk/gtk.h>
 #include <stdlib.h>
 #include <gnome-globalmenu/globalmenu-server.h>
-#include "ggtraybar.h"
+#include "ggt.h"
 
 static GdkAtom a_NET_WM_STRUT_PARTIAL = 0;
 static GdkAtom a_NET_WM_STRUT         = 0;
@@ -69,7 +69,7 @@ set_window_properties (GtkWindow *w)
 
     memset (data, 0x00, sizeof (gulong) * NET_WM_STRUT_NELEM);
 
-    data[NET_WM_STRUT_TOP]         = GGTRAYBAR_HEIGHT;
+    data[NET_WM_STRUT_TOP]         = GGT_HEIGHT;
     data[NET_WM_STRUT_TOP_START_X] = 0;
     data[NET_WM_STRUT_TOP_END_X]   = gdk_screen_width ();
 
@@ -123,7 +123,7 @@ main (int argc, char **argv)
                         0);
 
     /* Add tray widget, if it can be initialized. */
-    if ((gadget = gg_tray_init (&app)))
+    if ((gadget = ggt_tray_init (&app)))
         gtk_box_pack_end (GTK_BOX (hbox), gadget, FALSE, FALSE, 0);
 
 
@@ -136,7 +136,7 @@ main (int argc, char **argv)
 
     gtk_widget_set_size_request (app.window,
                                  gdk_screen_width (),
-                                 GGTRAYBAR_HEIGHT);
+                                 GGT_HEIGHT);
 
     gtk_widget_set_name (app.window, "PanelWidget");
     gtk_widget_show_all (app.window);
