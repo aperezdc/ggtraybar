@@ -100,7 +100,7 @@ set_window_properties (GtkWindow *w, ggtraybar_t *app)
                          a_GLOBALMENU_SETTINGS,
                          a_STRING, 8,
                          GDK_PROP_MODE_REPLACE,
-                         GLOBALMENU_ROOT_WINDOW_PAYLOAD,
+                         (const guchar*) GLOBALMENU_ROOT_WINDOW_PAYLOAD,
                          sizeof (GLOBALMENU_ROOT_WINDOW_PAYLOAD));
 
     gtk_window_move (w, app->primary_monitor.x, 0);
