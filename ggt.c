@@ -24,7 +24,7 @@
 
 static GdkAtom a_NET_WM_STRUT_PARTIAL = 0;
 static GdkAtom a_NET_WM_STRUT         = 0;
-static GdkAtom a_XA_CARDINAL          = 0;
+static GdkAtom a_CARDINAL             = 0;
 
 
 static void
@@ -32,7 +32,7 @@ intern_atoms (void)
 {
     a_NET_WM_STRUT_PARTIAL = gdk_atom_intern_static_string ("_NET_WM_STRUT_PARTIAL");
     a_NET_WM_STRUT         = gdk_atom_intern_static_string ("_NET_WM_STRUT");
-    a_XA_CARDINAL          = gdk_atom_intern_static_string ("XA_CARDINAL");
+    a_CARDINAL             = gdk_atom_intern_static_string ("CARDINAL");
 }
 
 
@@ -72,14 +72,14 @@ set_window_properties (GtkWindow *w, ggtraybar_t *app)
 
     gdk_property_change (window,
                          a_NET_WM_STRUT_PARTIAL,
-                         a_XA_CARDINAL, 32,
+                         a_CARDINAL, 32,
                          GDK_PROP_MODE_REPLACE,
                          (const guchar*) data,
                          NET_WM_STRUT_NELEM);
 
     gdk_property_change (window,
                          a_NET_WM_STRUT,
-                         a_XA_CARDINAL, 32,
+                         a_CARDINAL, 32,
                          GDK_PROP_MODE_REPLACE,
                          (const guchar*) data,
                          NET_WM_STRUT_COMPAT_NELEM);
