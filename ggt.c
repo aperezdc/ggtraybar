@@ -22,17 +22,29 @@
 #include <stdlib.h>
 #include <string.h>
 
+
+static GdkAtom a_GLOBALMENU_SETTINGS  = 0;
 static GdkAtom a_NET_WM_STRUT_PARTIAL = 0;
 static GdkAtom a_NET_WM_STRUT         = 0;
 static GdkAtom a_CARDINAL             = 0;
+static GdkAtom a_STRING               = 0;
+
+
+#define GLOBALMENU_ROOT_WINDOW_PAYLOAD "\n" \
+    "[GlobalMenu:Client]\n"                 \
+    "show-local-menu=false\n"               \
+    "show-menu-icons=true\n"                \
+    "changed-notify-timeout=500\n"
 
 
 static void
 intern_atoms (void)
 {
+    a_GLOBALMENU_SETTINGS  = gdk_atom_intern_static_string ("_NET_GLOBALMENU_SETTINGS");
     a_NET_WM_STRUT_PARTIAL = gdk_atom_intern_static_string ("_NET_WM_STRUT_PARTIAL");
     a_NET_WM_STRUT         = gdk_atom_intern_static_string ("_NET_WM_STRUT");
     a_CARDINAL             = gdk_atom_intern_static_string ("CARDINAL");
+    a_STRING               = gdk_atom_intern_static_string ("STRING");
 }
 
 
@@ -83,6 +95,13 @@ set_window_properties (GtkWindow *w, ggtraybar_t *app)
                          GDK_PROP_MODE_REPLACE,
                          (const guchar*) data,
                          NET_WM_STRUT_COMPAT_NELEM);
+
+    gdk_property_change (gdk_get_default_root_window (),
+                         a_GLOBALMENU_SETTINGS,
+                         a_STRING, 8,
+                         GDK_PROP_MODE_REPLACE,
+                         GLOBALMENU_ROOT_WINDOW_PAYLOAD,
+                         sizeof (GLOBALMENU_ROOT_WINDOW_PAYLOAD));
 
     gtk_window_move (w, app->primary_monitor.x, 0);
     gdk_display_sync (gtk_widget_get_display (GTK_WIDGET (w)));
