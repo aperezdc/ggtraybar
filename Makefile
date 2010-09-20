@@ -24,6 +24,15 @@ ggt: $(OBJS)
 clean:
 	$(RM) $(OBJS) ggt
 
+
+prefix  ?= $(HOME)/.local
+DESTDIR ?=
+
+install: ggt
+	install -d $(DESTDIR)$(prefix)/bin
+	install -m 755 ggt $(DESTDIR)$(prefix)/bin
+
+
 # vim:ft=make
 #
 
