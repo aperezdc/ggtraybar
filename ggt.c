@@ -80,7 +80,7 @@ set_window_properties (GtkWindow *w, ggtraybar_t *app)
     data[NET_WM_STRUT_TOP]         = GGT_HEIGHT;
     data[NET_WM_STRUT_TOP_START_X] = app->primary_monitor.x;
     data[NET_WM_STRUT_TOP_END_X]   = app->primary_monitor.x
-                                   + app->primary_monitor.width;
+                                   + app->primary_monitor.width - 1;
 
     gdk_property_change (window,
                          a_NET_WM_STRUT_PARTIAL,
