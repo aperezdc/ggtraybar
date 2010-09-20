@@ -57,10 +57,10 @@ make_calendar_window (void)
     gtk_window_set_position          (GTK_WINDOW (window), GTK_WIN_POS_MOUSE);
     gtk_window_stick                 (GTK_WINDOW (window));
 
-    gtk_calendar_display_options (GTK_CALENDAR (calendar),
-                                  GTK_CALENDAR_SHOW_WEEK_NUMBERS |
-                                  GTK_CALENDAR_SHOW_DAY_NAMES |
-                                  GTK_CALENDAR_SHOW_HEADING);
+    gtk_calendar_set_display_options (GTK_CALENDAR (calendar),
+                                      GTK_CALENDAR_SHOW_WEEK_NUMBERS |
+                                      GTK_CALENDAR_SHOW_DAY_NAMES |
+                                      GTK_CALENDAR_SHOW_HEADING);
 
     gtk_container_set_border_width (GTK_CONTAINER (window), 5);
     gtk_container_add (GTK_CONTAINER (window), calendar);
