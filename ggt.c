@@ -190,12 +190,11 @@ main (int argc, char **argv)
     gtk_widget_set_name (app.window, "PanelWidget");
 
     /*
-     * After having the window mapped, we are sure that GDK_SCREEN()
-     * will return something sane, so intern atoms and set X properties.
+     * We need X resources to get created so Gdk knows what to do to intern
+     * atoms and setting properties: window needs to be realized first!
      */
-    intern_atoms ();
-
-    /* Manually call this to set window propertis the first time */
+    gtk_widget_realize  (app.window);
+    intern_atoms        ();
     on_monitors_changed (gtk_widget_get_screen (app.window), &app);
     gtk_widget_show_all (app.window);
 
