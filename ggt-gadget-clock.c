@@ -86,6 +86,32 @@ on_calendar_toggle (GtkToggleButton *button, gpointer data)
 }
 
 
+static gboolean
+on_tooltip_show (GtkWidget  *button,
+                 gint        x,
+                 gint        y,
+                 gboolean    keyboardmode,
+                 GtkTooltip *tooltip,
+                 gpointer    udata)
+{
+    char buf[100];
+    time_t tnow;
+    struct tm *now;
+
+    g_assert (button);
+    g_assert (tooltip);
+
+    time (&tnow);
+    now = localtime (&tnow);
+    strftime (buf, 100, "%c", now);
+
+    gtk_tooltip_set_text (tooltip, buf);
+
+    return TRUE;
+}
+
+
+
 GtkWidget*
 ggt_clock_init (ggtraybar_t *app)
 {
@@ -102,6 +128,12 @@ ggt_clock_init (ggtraybar_t *app)
     g_signal_connect (G_OBJECT (button), "toggled",
                       G_CALLBACK (on_calendar_toggle),
                       calwin);
+
+    g_signal_connect (G_OBJECT (button), "query-tooltip",
+                      G_CALLBACK (on_tooltip_show),
+                      NULL);
+
+    gtk_widget_set_has_tooltip (button, TRUE);
 
     g_timeout_add (1000, (GSourceFunc) clock_tick_update, button);
 
