@@ -94,7 +94,7 @@ on_tooltip_show (GtkWidget  *button,
                  GtkTooltip *tooltip,
                  gpointer    udata)
 {
-    char buf[100];
+    char buf[60];
     time_t tnow;
     struct tm *now;
 
@@ -103,7 +103,7 @@ on_tooltip_show (GtkWidget  *button,
 
     time (&tnow);
     now = localtime (&tnow);
-    strftime (buf, 100, "%c", now);
+    strftime (buf, 60, "%x", now);
 
     gtk_tooltip_set_text (tooltip, buf);
 
