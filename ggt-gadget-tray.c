@@ -109,17 +109,19 @@ ggt_tray_init (ggtraybar_t *app)
 {
     EggTrayManager *traymgr;
     GtkWidget *gadget;
+    GdkScreen *screen;
 
     g_assert (app);
-    g_assert (app->screen);
 
-    if (egg_tray_manager_check_running (app->screen)) {
+    screen = gtk_widget_get_screen (app->window);
+
+    if (egg_tray_manager_check_running (screen)) {
         g_warning ("Another tray manager already running, disabling.");
         return NULL;
     }
 
     traymgr = egg_tray_manager_new ();
-    if (!egg_tray_manager_manage_screen (traymgr, app->screen))
+    if (!egg_tray_manager_manage_screen (traymgr, screen))
         g_printerr ("Tray manager could not manage screen.");
 
     gadget = gtk_hbox_new (TRUE, 1);

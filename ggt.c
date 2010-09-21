@@ -49,32 +49,39 @@ intern_atoms (void)
 
 
 static void
-configure_window (GtkWindow *w)
+configure_window (ggtraybar_t *app)
 {
-    g_assert (w);
+    GtkWindow *window;
 
-    gtk_window_stick                 (w);
-    gtk_window_set_title             (w, "Menu");
-    gtk_window_set_role              (w, "traybar");
-    gtk_window_set_icon_name         (w, "gtk-preferences");
-    gtk_window_set_wmclass           (w, "GGTrayBar", "ggtraybar");
-    gtk_window_set_type_hint         (w, GDK_WINDOW_TYPE_HINT_DOCK);
-    gtk_window_set_resizable         (w, FALSE);
-    gtk_window_set_decorated         (w, FALSE);
-    gtk_window_set_focus_on_map      (w, FALSE);
-    gtk_window_set_keep_above        (w, TRUE);
-    gtk_window_set_skip_pager_hint   (w, TRUE);
-    gtk_window_set_skip_taskbar_hint (w, TRUE);
-    gtk_container_set_border_width   (GTK_CONTAINER (w), 0);
+    g_assert (app);
+
+    window = GTK_WINDOW (app->window);
+
+    gtk_window_stick                 (window);
+    gtk_window_set_title             (window, "Menu");
+    gtk_window_set_role              (window, "traybar");
+    gtk_window_set_icon_name         (window, "gtk-preferences");
+    gtk_window_set_wmclass           (window, "GGTrayBar", "ggtraybar");
+    gtk_window_set_type_hint         (window, GDK_WINDOW_TYPE_HINT_DOCK);
+    gtk_window_set_resizable         (window, FALSE);
+    gtk_window_set_decorated         (window, FALSE);
+    gtk_window_set_focus_on_map      (window, FALSE);
+    gtk_window_set_keep_above        (window, TRUE);
+    gtk_window_set_skip_pager_hint   (window, TRUE);
+    gtk_window_set_skip_taskbar_hint (window, TRUE);
+    gtk_container_set_border_width   (GTK_CONTAINER (window), 0);
 }
 
 
 static void
-set_window_properties (GtkWindow *w, ggtraybar_t *app)
+set_window_properties (ggtraybar_t *app)
 {
-    GdkWindow *window = gtk_widget_get_window (GTK_WIDGET (w));
+    GdkWindow *window;
     gulong data[NET_WM_STRUT_NELEM];
 
+    g_assert (app);
+
+    window = gtk_widget_get_window (GTK_WIDGET (app->window));
     memset (data, 0x00, sizeof (gulong) * NET_WM_STRUT_NELEM);
 
     data[NET_WM_STRUT_TOP]         = GGT_HEIGHT;
@@ -103,8 +110,8 @@ set_window_properties (GtkWindow *w, ggtraybar_t *app)
                          (const guchar*) GLOBALMENU_ROOT_WINDOW_PAYLOAD,
                          sizeof (GLOBALMENU_ROOT_WINDOW_PAYLOAD));
 
-    gtk_window_move (w, app->primary_monitor.x, 0);
-    gdk_display_sync (gtk_widget_get_display (GTK_WIDGET (w)));
+    gtk_window_move (GTK_WINDOW (app->window), app->primary_monitor.x, 0);
+    gdk_display_sync (gtk_widget_get_display (GTK_WIDGET (app->window)));
 }
 
 
@@ -128,7 +135,7 @@ main (int argc, char **argv)
                                      gdk_screen_get_primary_monitor (app.screen),
                                      &app.primary_monitor);
 
-    configure_window (GTK_WINDOW (app.window));
+    configure_window (&app);
 
     /*
      * Now create a GtkHBox where all gadgets will be added, and then
@@ -178,7 +185,7 @@ main (int argc, char **argv)
      */
     gtk_widget_show_all (app.window);
     intern_atoms ();
-    set_window_properties (GTK_WINDOW (app.window), &app);
+    set_window_properties (&app);
 
     gtk_main ();
 
