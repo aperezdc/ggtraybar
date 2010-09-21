@@ -135,7 +135,7 @@ ggt_clock_init (ggtraybar_t *app)
 
     gtk_widget_set_has_tooltip (button, TRUE);
 
-    g_timeout_add (1000, (GSourceFunc) clock_tick_update, button);
+    g_timeout_add (1000 * 15, (GSourceFunc) clock_tick_update, button);
 
     return button;
 }
