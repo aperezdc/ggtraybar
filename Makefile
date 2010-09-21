@@ -6,7 +6,7 @@
 SRCS := $(wildcard *.c)
 OBJS := $(patsubst %.c,%.o,$(SRCS))
 
-PKG_MODULE := glib-2.0 gtk+-2.0 globalmenu-server libwnck-1.0
+PKG_MODULE := glib-2.0 gtk+-2.0 globalmenu-server libwnck-1.0 gtkhotkey-1.0
 
 PKG_CFLAGS := $(shell pkg-config $(PKG_MODULE) --cflags)
 PKG_LDLIBS := $(shell pkg-config $(PKG_MODULE) --libs)

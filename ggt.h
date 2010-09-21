@@ -50,6 +50,7 @@
 
 struct ggtraybar_s {
     GtkWidget    *window;
+    GtkWidget    *content;
     GdkRectangle  primary_monitor;
 };
 typedef struct ggtraybar_s ggtraybar_t;
@@ -59,6 +60,7 @@ GtkWidget* ggt_tray_init       (ggtraybar_t *app);
 GtkWidget* ggt_globalmenu_init (ggtraybar_t *app);
 GtkWidget* ggt_clock_init      (ggtraybar_t *app);
 GtkWidget* ggt_pager_init      (ggtraybar_t *app);
+GtkWidget* ggt_launcher_init   (ggtraybar_t *app);
 
 
 #endif /* !__ggtraybar_h__ */

@@ -140,7 +140,6 @@ int
 main (int argc, char **argv)
 {
     GtkWidget *hbox;
-
     ggtraybar_t app;
 
     g_type_init ();
@@ -171,10 +170,16 @@ main (int argc, char **argv)
             gtk_box_pack_ ## _pos (GTK_BOX (_box), gadget, FALSE, FALSE, 0); \
     } while (0)
 
-    GADGET (hbox, start, ggt_globalmenu_init (&app));
-    GADGET (hbox, end,   ggt_clock_init      (&app));
-    GADGET (hbox, end,   ggt_tray_init       (&app));
-    GADGET (hbox, end,   ggt_pager_init      (&app));
+    app.content = ggt_globalmenu_init (&app);
+    g_object_ref (app.content);
+
+    GADGET (hbox, start, app.content);
+    GADGET (hbox, end,   ggt_clock_init    (&app));
+    GADGET (hbox, end,   ggt_tray_init     (&app));
+    GADGET (hbox, end,   ggt_pager_init    (&app));
+    GADGET (hbox, start, ggt_launcher_init (&app));
+
+    g_object_ref (app.content);
 
     /*
      * Finished adding widgets to the panel.
