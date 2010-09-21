@@ -115,6 +115,26 @@ set_window_properties (ggtraybar_t *app)
 }
 
 
+static void
+on_monitors_changed (GdkScreen *screen, gpointer data)
+{
+    ggtraybar_t *app = (ggtraybar_t*) data;
+
+    g_assert (screen);
+    g_assert (app);
+
+    gdk_screen_get_monitor_geometry (screen,
+                                     gdk_screen_get_primary_monitor (screen),
+                                     &app->primary_monitor);
+
+    gtk_widget_set_size_request (app->window,
+                                 app->primary_monitor.width,
+                                 GGT_HEIGHT);
+
+    set_window_properties (app);
+}
+
+
 
 int
 main (int argc, char **argv)
@@ -129,12 +149,6 @@ main (int argc, char **argv)
     memset (&app, 0x00, sizeof (ggtraybar_t));
 
     app.window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
-    app.screen = gtk_widget_get_screen (app.window);
-
-    gdk_screen_get_monitor_geometry (app.screen,
-                                     gdk_screen_get_primary_monitor (app.screen),
-                                     &app.primary_monitor);
-
     configure_window (&app);
 
     /*
@@ -169,10 +183,6 @@ main (int argc, char **argv)
     gtk_container_add (GTK_CONTAINER (app.window),
                        GTK_WIDGET (hbox));
 
-    gtk_widget_set_size_request (app.window,
-                                 app.primary_monitor.width,
-                                 GGT_HEIGHT);
-
     /*
      * This makes the panel use the same GtkRc styles than those used by the
      * GNOME panel, so themes which modify the panel should blend finely.
@@ -183,9 +193,16 @@ main (int argc, char **argv)
      * After having the window mapped, we are sure that GDK_SCREEN()
      * will return something sane, so intern atoms and set X properties.
      */
-    gtk_widget_show_all (app.window);
     intern_atoms ();
-    set_window_properties (&app);
+
+    /* Manually call this to set window propertis the first time */
+    on_monitors_changed (gtk_widget_get_screen (app.window), &app);
+    gtk_widget_show_all (app.window);
+
+    g_signal_connect (G_OBJECT (gtk_widget_get_screen (app.window)),
+                      "monitors_changed",
+                      G_CALLBACK (on_monitors_changed),
+                      &app);
 
     gtk_main ();
 
