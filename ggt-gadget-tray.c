@@ -45,32 +45,28 @@ tray_changed (GtkWidget *widget)
 
 
 static void
-tray_added (EggTrayManager *traymgr, GtkWidget *icon, void *priv)
+tray_added (EggTrayManager *traymgr, GtkWidget *icon, GtkWidget *box)
 {
-    GtkBox *box = GTK_BOX (priv);
-
     g_assert (traymgr);
     g_assert (icon);
-    g_assert (priv);
+    g_assert (box);
 
-    gtk_box_pack_end (box, icon, FALSE, FALSE, 0);
+    gtk_box_pack_end (GTK_BOX (box), icon, FALSE, FALSE, 0);
     gtk_widget_show (icon);
     gdk_display_sync (gtk_widget_get_display (icon));
 
-    tray_changed (GTK_WIDGET (box));
+    tray_changed (box);
 }
 
 
 static void
-tray_removed (EggTrayManager *traymgr, GtkWidget *icon, void *priv)
+tray_removed (EggTrayManager *traymgr, GtkWidget *icon, GtkWidget *box)
 {
-    GtkBox *box = GTK_BOX (priv);
-
     g_assert (traymgr);
     g_assert (icon);
-    g_assert (priv);
+    g_assert (box);
 
-    tray_changed (GTK_WIDGET (box));
+    tray_changed (box);
 }
 
 
@@ -80,7 +76,7 @@ message_sent (EggTrayManager *traymgr,
               const char     *text,
               glong           mid,
               glong           timeout,
-              void           *data)
+              gpointer        data)
 {
     gint x, y;
 
@@ -97,7 +93,7 @@ static void
 message_cancel (EggTrayManager *traymgr,
                 GtkWidget      *icon,
                 glong           mid,
-                void           *data)
+                gpointer        data)
 {
 }
 
@@ -105,7 +101,7 @@ message_cancel (EggTrayManager *traymgr,
 
 
 GtkWidget*
-ggt_tray_init (ggtraybar_t *app)
+ggt_tray_init (GGTraybar *app)
 {
     EggTrayManager *traymgr;
     GtkWidget *gadget;

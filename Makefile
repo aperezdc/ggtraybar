@@ -15,7 +15,8 @@ LDFLAGS   += $(subst -lserver,-lglobalmenu-server,$(PKG_LDLIBS))
 CFLAGS    += $(PKG_CFLAGS) \
 						 -DGSEAL_ENABLE \
 						 -DGTK_DISABLE_DEPRECATED \
-						 -DGDK_DISABLE_DEPRECATED
+						 -DGDK_DISABLE_DEPRECATED \
+						 -Wall -W -Wno-unused
 
 all: ggt
 

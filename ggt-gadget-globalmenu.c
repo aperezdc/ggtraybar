@@ -24,7 +24,7 @@
 
 
 GtkWidget*
-ggt_globalmenu_init (ggtraybar_t *app)
+ggt_globalmenu_init (GGTraybar *app)
 {
     g_assert (app);
 

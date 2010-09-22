@@ -25,19 +25,19 @@
 
 
 static gint
-clock_tick_update (void *data)
+clock_tick_update (GtkButton *button)
 {
     gchar buf[20];
     time_t tnow;
     struct tm *now;
 
-    g_assert (data);
+    g_assert (button);
 
     time (&tnow);
     now = localtime (&tnow);
     strftime (buf, 20, "%H:%M", now);
 
-    gtk_button_set_label (GTK_BUTTON (data), buf);
+    gtk_button_set_label (button, buf);
 
     return TRUE;
 }
@@ -70,14 +70,10 @@ make_calendar_window (void)
 
 
 static void
-on_calendar_toggle (GtkToggleButton *button, gpointer data)
+on_calendar_toggle (GtkToggleButton *button, GtkWidget *calendar)
 {
-    GtkWidget *calendar;
-
     g_assert (button);
-    g_assert (data);
-
-    calendar = GTK_WIDGET (data);
+    g_assert (calendar);
 
     if (gtk_toggle_button_get_active (button))
         gtk_widget_show_all (calendar);
@@ -92,7 +88,7 @@ on_tooltip_show (GtkWidget  *button,
                  gint        y,
                  gboolean    keyboardmode,
                  GtkTooltip *tooltip,
-                 gpointer    udata)
+                 gpointer    data)
 {
     char buf[60];
     time_t tnow;
@@ -113,7 +109,7 @@ on_tooltip_show (GtkWidget  *button,
 
 
 GtkWidget*
-ggt_clock_init (ggtraybar_t *app)
+ggt_clock_init (GGTraybar *app)
 {
     GtkWidget *button = gtk_toggle_button_new_with_label ("HH:MM");
     GtkWidget *calwin = make_calendar_window ();
@@ -123,7 +119,7 @@ ggt_clock_init (ggtraybar_t *app)
     gtk_button_set_relief (GTK_BUTTON (button),
                            GTK_RELIEF_NONE);
 
-    clock_tick_update (button);
+    clock_tick_update (GTK_BUTTON (button));
 
     g_signal_connect (G_OBJECT (button), "toggled",
                       G_CALLBACK (on_calendar_toggle),

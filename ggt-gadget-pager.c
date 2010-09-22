@@ -26,7 +26,7 @@
 
 
 GtkWidget*
-ggt_pager_init (ggtraybar_t *app)
+ggt_pager_init (GGTraybar *app)
 {
     g_assert (app);
     return wnck_pager_new (wnck_screen_get_default ());

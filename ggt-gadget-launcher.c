@@ -28,7 +28,7 @@ static GQuark q_entry_widget    = 0;
 
 
 static void
-hide_launcher (ggtraybar_t *app, GtkWidget *launcher)
+hide_launcher (GGTraybar *app, GtkWidget *launcher)
 {
     GtkContainer *container;
 
@@ -47,10 +47,8 @@ hide_launcher (ggtraybar_t *app, GtkWidget *launcher)
 
 
 static void
-on_entry_activate (GtkEntry *entry, void *data)
+on_entry_activate (GtkEntry *entry, GGTraybar *app)
 {
-    ggtraybar_t *app = (ggtraybar_t*) data;
-
     g_assert (entry);
     g_assert (app);
 
@@ -61,9 +59,8 @@ on_entry_activate (GtkEntry *entry, void *data)
 
 
 static void
-on_key_activated (GtkHotkeyInfo *hk, guint evtime, gpointer data)
+on_key_activated (GtkHotkeyInfo *hk, guint evtime, GGTraybar *app)
 {
-    ggtraybar_t *app = (ggtraybar_t*) data;
     GtkContainer *container;
     GtkWidget *entry;
 
@@ -94,16 +91,15 @@ on_key_activated (GtkHotkeyInfo *hk, guint evtime, gpointer data)
 
 
 static gboolean
-on_entry_key_release (GtkWidget *entry, GdkEventKey *event, gpointer data)
+on_entry_key_release (GtkWidget *entry, GdkEventKey *event, GGTraybar *app)
 {
     g_assert (entry);
     g_assert (event);
-    g_assert (data);
+    g_assert (app);
 
     if (event->keyval == GDK_Escape) {
-        hide_launcher ((ggtraybar_t*) data,
-                       GTK_WIDGET (g_object_get_qdata (G_OBJECT (entry),
-                                                       q_launcher_widget)));
+        hide_launcher (app, GTK_WIDGET (g_object_get_qdata (G_OBJECT (entry),
+                                                            q_launcher_widget)));
         /* Inhibit event propagation */
         return TRUE;
     }
@@ -114,7 +110,7 @@ on_entry_key_release (GtkWidget *entry, GdkEventKey *event, gpointer data)
 
 
 GtkWidget*
-ggt_launcher_init (ggtraybar_t *app)
+ggt_launcher_init (GGTraybar *app)
 {
     GtkWidget *hbox   = gtk_hbox_new (FALSE, 5);
     GtkWidget *label  = gtk_label_new ("Command:");

@@ -49,7 +49,7 @@ intern_atoms (void)
 
 
 static void
-configure_window (ggtraybar_t *app)
+configure_window (GGTraybar *app)
 {
     GtkWindow *window;
 
@@ -61,7 +61,7 @@ configure_window (ggtraybar_t *app)
     gtk_window_set_title             (window, "Menu");
     gtk_window_set_role              (window, "traybar");
     gtk_window_set_icon_name         (window, "gtk-preferences");
-    gtk_window_set_wmclass           (window, "GGTrayBar", "ggtraybar");
+    gtk_window_set_wmclass           (window, "GGTraybar", "ggtraybar");
     gtk_window_set_type_hint         (window, GDK_WINDOW_TYPE_HINT_DOCK);
     gtk_window_set_resizable         (window, FALSE);
     gtk_window_set_decorated         (window, FALSE);
@@ -74,7 +74,7 @@ configure_window (ggtraybar_t *app)
 
 
 static void
-set_window_properties (ggtraybar_t *app)
+set_window_properties (GGTraybar *app)
 {
     GdkWindow *window;
     gulong data[NET_WM_STRUT_NELEM];
@@ -118,7 +118,7 @@ set_window_properties (ggtraybar_t *app)
 static void
 on_monitors_changed (GdkScreen *screen, gpointer data)
 {
-    ggtraybar_t *app = (ggtraybar_t*) data;
+    GGTraybar *app = (GGTraybar*) data;
 
     g_assert (screen);
     g_assert (app);
@@ -140,12 +140,12 @@ int
 main (int argc, char **argv)
 {
     GtkWidget *hbox;
-    ggtraybar_t app;
+    GGTraybar app;
 
     g_type_init ();
     gtk_init (&argc, &argv);
 
-    memset (&app, 0x00, sizeof (ggtraybar_t));
+    memset (&app, 0x00, sizeof (GGTraybar));
 
     app.window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
     configure_window (&app);
