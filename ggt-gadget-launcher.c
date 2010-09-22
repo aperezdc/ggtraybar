@@ -152,7 +152,6 @@ ggt_launcher_init (GGTraybar *app)
     gtk_rc_parse_string ("style \"launchentry\" {\n"
                          "  fg[NORMAL] = \"#fff\"\n"
                          "  text[NORMAL] = \"#000\"\n"
-                         "  font_name = \"monospace\"\n"
                          "}\n"
                          "widget \"*ggt-launcher-entry\" style \"launchentry\"");
 
