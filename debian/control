@@ -1,0 +1,25 @@
+Source: ggtraybar
+Section: utils
+Priority: optional
+Homepage: http://furi-ku.org/+/cgit/code/ggtraybar
+Maintainer: Adrian Perez <aperez@igalia.com>
+Build-Depends: debhelper (>= 7),
+               libgtk2.0-dev (>= 2.18),
+               libwnck-dev (>= 2.28),
+               libgtkhotkey-dev (>= 0.2),
+               libgnomenu0-dev (>= 0.7)
+Standards-Version: 3.8.4
+
+Package: ggtraybar
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Tiny replacement for GNOME Panel with global manu support.
+ The GNOME GlobalMenu Traybar (aka "ggt") is a replacement for the GNOME
+ Panel. It was designed to be  simple, light and work nicely with the
+ OpenBox window manager. Along with the global menu, it has an inline
+ command-line like launcher, pager, system tray, clock with calendar
+ and multimonitor support via XRandR.
+ .
+ To use it with OpenBox, just launch ggt from its autostart.sh script.
+
+
