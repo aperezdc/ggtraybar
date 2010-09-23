@@ -160,7 +160,7 @@ main (int argc, char **argv)
      *
      * Why? Because I want them that way... and less is more :-)
      */
-    hbox = gtk_hbox_new (FALSE, 5);
+    hbox = gtk_hbox_new (FALSE, 0);
 
 
 #define GADGET(_box, _pos, _gad)                                             \
