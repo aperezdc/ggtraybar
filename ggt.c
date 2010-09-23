@@ -58,7 +58,7 @@ configure_window (GGTraybar *app)
     window = GTK_WINDOW (app->window);
 
     gtk_window_stick                 (window);
-    gtk_window_set_title             (window, "Menu");
+    gtk_window_set_title             (window, "GGTraybar");
     gtk_window_set_role              (window, "traybar");
     gtk_window_set_icon_name         (window, "gtk-preferences");
     gtk_window_set_wmclass           (window, "GGTraybar", "ggtraybar");
@@ -68,7 +68,6 @@ configure_window (GGTraybar *app)
     gtk_window_set_focus_on_map      (window, FALSE);
     gtk_window_set_keep_above        (window, TRUE);
     gtk_window_set_skip_pager_hint   (window, TRUE);
-    gtk_window_set_skip_taskbar_hint (window, TRUE);
     gtk_container_set_border_width   (GTK_CONTAINER (window), 0);
 }
 
