@@ -46,16 +46,10 @@ clock_tick_update (GtkButton *button)
 static GtkWidget*
 make_calendar_window (void)
 {
-    GtkWidget *window   = gtk_window_new (GTK_WINDOW_TOPLEVEL);
+    GtkWidget *window   = gtk_window_new (GTK_WINDOW_POPUP);
     GtkWidget *calendar = gtk_calendar_new ();
 
-    gtk_window_set_default_size      (GTK_WINDOW (window), 180, 180);
-    gtk_window_set_decorated         (GTK_WINDOW (window), FALSE);
-    gtk_window_set_resizable         (GTK_WINDOW (window), FALSE);
-    gtk_window_set_skip_taskbar_hint (GTK_WINDOW (window), TRUE);
-    gtk_window_set_skip_pager_hint   (GTK_WINDOW (window), TRUE);
-    gtk_window_set_position          (GTK_WINDOW (window), GTK_WIN_POS_MOUSE);
-    gtk_window_stick                 (GTK_WINDOW (window));
+    gtk_window_set_default_size (GTK_WINDOW (window), 180, 180);
 
     gtk_calendar_set_display_options (GTK_CALENDAR (calendar),
                                       GTK_CALENDAR_SHOW_WEEK_NUMBERS |
@@ -72,11 +66,17 @@ make_calendar_window (void)
 static void
 on_calendar_toggle (GtkToggleButton *button, GtkWidget *calendar)
 {
+    gint x, y;
+
     g_assert (button);
     g_assert (calendar);
 
-    if (gtk_toggle_button_get_active (button))
+    if (gtk_toggle_button_get_active (button)) {
+        gtk_window_set_position (GTK_WINDOW (calendar), GTK_WIN_POS_MOUSE);
         gtk_widget_show_all (calendar);
+        gtk_window_get_position (GTK_WINDOW (calendar), &x, &y);
+        gtk_window_move (GTK_WINDOW (calendar), x, GGT_HEIGHT);
+    }
     else
         gtk_widget_hide (calendar);
 }
