@@ -13,10 +13,10 @@ PKG_LDLIBS := $(shell pkg-config $(PKG_MODULE) --libs)
 
 LDFLAGS   += $(PKG_LDLIBS)
 CFLAGS    += $(PKG_CFLAGS) $(OPT_CFLAGS) \
-						 -DGSEAL_ENABLE \
+             -DGSEAL_ENABLE \
 						 -DGTK_DISABLE_DEPRECATED \
 						 -DGDK_DISABLE_DEPRECATED \
-						 -Wall -W -Wno-unused
+						 -Wall -W -Wno-unused -std=gnu99
 
 all: ggt
 
