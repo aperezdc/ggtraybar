@@ -2,3 +2,4 @@
 ggt
 .ycm_extra_conf.pyc
 eggmarshalers.[hc]
+.*.sw[op]
