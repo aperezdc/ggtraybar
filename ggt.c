@@ -68,7 +68,7 @@ configure_window (GGTraybar *app)
 }
 
 
-static void
+static inline void
 set_window_properties (GGTraybar *app)
 {
     GdkWindow *window;
