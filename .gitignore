@@ -1,2 +1,3 @@
 *.o
 ggt
+.ycm_extra_conf.pyc
