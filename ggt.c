@@ -22,6 +22,7 @@
 
 #include "ggt.h"
 #include "ggt-tray.h"
+#include "ggt-launcher.h"
 #include <libwnck/libwnck.h>
 #include <keybinder.h>
 #include <stdlib.h>
@@ -183,7 +184,7 @@ main (int argc, char **argv)
     GADGET (app.content, end,   ggt_clock_new     (&app));
     GADGET (app.content, end,   ggt_tray_new      ());
     /* GADGET (app.content, end,   ggt_pager_new    (&app)); */
-    GADGET (app.content, start, ggt_launcher_new (&app));
+    ggt_launcher_new ("<Alt>F2", GTK_WINDOW (app.window));
 
     /*
      * Finished adding widgets to the panel.

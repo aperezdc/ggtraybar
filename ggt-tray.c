@@ -81,6 +81,7 @@ ggt_tray_finalize (GObject *object)
     GgtTray *tray = GGT_TRAY (object);
     g_object_unref (tray->manager);
     g_object_unref (tray->box);
+    G_OBJECT_CLASS (ggt_tray_parent_class)->finalize (object);
 }
 
 static void
