@@ -1,6 +1,6 @@
 /*
- * ggt-gadget-pager.c
- * Copyright (C) 2010-2014 Adrian Perez <aperez@igalia.com>
+ * ggt-gadget-winsel.c
+ * Copyright (C) 2014 Adrian Perez <aperez@igalia.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -24,16 +24,16 @@
 #include <libwnck/libwnck.h>
 
 GtkWidget*
-ggt_pager_init (GGTraybar *app)
+ggt_winlist_init (GGTraybar *app)
 {
-    GtkWidget *pager;
+    GtkWidget *winlist = wnck_tasklist_new ();
+
     g_assert (app);
 
-    pager = wnck_pager_new ();
-    wnck_pager_set_display_mode (WNCK_PAGER (pager), WNCK_PAGER_DISPLAY_CONTENT);
-    wnck_pager_set_orientation (WNCK_PAGER (pager), GTK_ORIENTATION_HORIZONTAL);
-    wnck_pager_set_show_all (WNCK_PAGER (pager), TRUE);
-    wnck_pager_set_n_rows (WNCK_PAGER (pager), 1);
-    gtk_widget_set_size_request (pager, 0, 0);
-    return pager;
+    wnck_tasklist_set_grouping (WNCK_TASKLIST (winlist), WNCK_TASKLIST_AUTO_GROUP);
+    wnck_tasklist_set_include_all_workspaces (WNCK_TASKLIST (winlist), FALSE);
+    wnck_tasklist_set_switch_workspace_on_unminimize (WNCK_TASKLIST (winlist), FALSE);
+
+    return winlist;
 }
+

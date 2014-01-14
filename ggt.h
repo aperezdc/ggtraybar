@@ -22,7 +22,7 @@
 #define __ggtraybar_h__
 
 #ifndef GGT_HEIGHT
-#define GGT_HEIGHT 24
+#define GGT_HEIGHT 20
 #endif /* !GGT_HEIGHT */
 
 /*
@@ -57,7 +57,8 @@ typedef struct _GGTraybar GGTraybar;
 
 
 GtkWidget* ggt_tray_init       (GGTraybar *app);
-GtkWidget* ggt_globalmenu_init (GGTraybar *app);
+GtkWidget* ggt_winsel_init     (GGTraybar *app);
+GtkWidget* ggt_winlist_init    (GGTraybar *app);
 GtkWidget* ggt_clock_init      (GGTraybar *app);
 GtkWidget* ggt_pager_init      (GGTraybar *app);
 GtkWidget* ggt_launcher_init   (GGTraybar *app);

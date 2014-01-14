@@ -1,6 +1,6 @@
 /*
  * ggt-gadget-launcher.c
- * Copyright (C) 2010 Adrian Perez <aperez@igalia.com>
+ * Copyright (C) 2010-2014 Adrian Perez <aperez@igalia.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,7 +19,7 @@
  */
 
 #include "ggt.h"
-#include <gtkhotkey.h>
+#include <keybinder.h>
 #include <gdk/gdkkeysyms.h>
 
 
@@ -59,22 +59,23 @@ on_entry_activate (GtkEntry *entry, GGTraybar *app)
 
 
 static void
-on_key_activated (GtkHotkeyInfo *hk, guint evtime, GGTraybar *app)
+on_key_activated (const char *keystring, void *user_data)
 {
+    GGTraybar *app = (GGTraybar*) user_data;
     GtkContainer *container;
     GtkWidget *entry;
 
     g_assert (app);
-    g_assert (hk);
+    (void) keystring;
 
-    entry = GTK_WIDGET (g_object_get_qdata (G_OBJECT (hk), q_entry_widget));
+    entry = GTK_WIDGET (g_object_get_qdata (G_OBJECT (app->window), q_entry_widget));
     container = GTK_CONTAINER (gtk_bin_get_child (GTK_BIN (app->window)));
 
     gtk_widget_hide (app->content);
     gtk_container_remove (container, app->content);
 
     gtk_box_pack_start (GTK_BOX (container),
-                        GTK_WIDGET (g_object_get_qdata (G_OBJECT (hk),
+                        GTK_WIDGET (g_object_get_qdata (G_OBJECT (app->window),
                                                         q_launcher_widget)),
                         TRUE,
                         TRUE,
@@ -97,7 +98,7 @@ on_entry_key_release (GtkWidget *entry, GdkEventKey *event, GGTraybar *app)
     g_assert (event);
     g_assert (app);
 
-    if (event->keyval == GDK_Escape) {
+    if (event->keyval == GDK_KEY_Escape) {
         hide_launcher (app, GTK_WIDGET (g_object_get_qdata (G_OBJECT (entry),
                                                             q_launcher_widget)));
         /* Inhibit event propagation */
@@ -112,14 +113,9 @@ on_entry_key_release (GtkWidget *entry, GdkEventKey *event, GGTraybar *app)
 GtkWidget*
 ggt_launcher_init (GGTraybar *app)
 {
-    GtkWidget *hbox   = gtk_hbox_new (FALSE, 5);
+    GtkWidget *hbox   = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 5);
     GtkWidget *label  = gtk_label_new ("Command:");
     GtkWidget *entry  = gtk_entry_new ();
-
-    GtkHotkeyInfo *hk = gtk_hotkey_info_new ("ggtraybar",
-                                             "ggt-gadget-launcher",
-                                             "<Alt>F2",
-                                             NULL);
 
     g_assert (app);
 
@@ -129,11 +125,9 @@ ggt_launcher_init (GGTraybar *app)
     gtk_box_pack_start (GTK_BOX (hbox), label, FALSE, FALSE, 0);
     gtk_box_pack_start (GTK_BOX (hbox), entry, TRUE, TRUE, 0);
 
-    g_object_ref (hbox);
-
-    g_object_set_qdata (G_OBJECT (hk),    q_entry_widget,   entry);
-    g_object_set_qdata (G_OBJECT (hk),    q_launcher_widget, hbox);
-    g_object_set_qdata (G_OBJECT (entry), q_launcher_widget, hbox);
+    g_object_set_qdata (G_OBJECT (app->window), q_entry_widget,   entry);
+    g_object_set_qdata (G_OBJECT (app->window), q_launcher_widget, hbox);
+    g_object_set_qdata (G_OBJECT (entry),       q_launcher_widget, hbox);
 
     g_signal_connect (G_OBJECT (entry), "activate",
                       G_CALLBACK (on_entry_activate), app);
@@ -141,27 +135,26 @@ ggt_launcher_init (GGTraybar *app)
     g_signal_connect (G_OBJECT (entry), "key-release-event",
                       G_CALLBACK (on_entry_key_release), app);
 
-    g_signal_connect (G_OBJECT (hk), "activated",
-                      G_CALLBACK (on_key_activated), app);
+    if (!keybinder_bind ("<Alt>F2", on_key_activated, app))
+        g_printerr ("Could not bind <Alt>F2 keystroke\n");
 
     /*
      * XXX Surely this is not elegant, but currently I do not know a better
      *     way of making black-on-white with some bogus themes (e.g. Shiki)
      *     for which theme-assigned colors feel right.
+     *
+     * FIXME Change this to use GtkCssProvider
      */
+#if 0
     gtk_rc_parse_string ("style \"launchentry\" {\n"
                          "  fg[NORMAL] = \"#fff\"\n"
                          "  text[NORMAL] = \"#000\"\n"
                          "}\n"
                          "widget \"*ggt-launcher-entry\" style \"launchentry\"");
+#endif
 
-    gtk_widget_realize (entry);
     gtk_widget_set_name (entry, "ggt-launcher-entry");
     gtk_widget_add_events (entry, GDK_KEY_PRESS_MASK);
 
-    if (!gtk_hotkey_info_bind (hk, NULL))
-        g_printerr ("Could not bind key\n");
-
     return NULL;
 }
-

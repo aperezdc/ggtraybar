@@ -19,8 +19,11 @@
 
 #include <string.h>
 #include <gtk/gtk.h>
+#include <gtk/gtkx.h>
 #include "eggtraymanager.h"
 #include "eggmarshalers.h"
+
+G_DEFINE_TYPE (EggTrayManager, egg_tray_manager, G_TYPE_OBJECT)
 
 /* Signals */
 enum
@@ -59,32 +62,6 @@ static void egg_tray_manager_finalize (GObject *object);
 
 static void egg_tray_manager_unmanage (EggTrayManager *manager);
 
-GType
-egg_tray_manager_get_type (void)
-{
-  static GType our_type = 0;
-
-  if (our_type == 0)
-    {
-      static const GTypeInfo our_info =
-      {
-	sizeof (EggTrayManagerClass),
-	(GBaseInitFunc) NULL,
-	(GBaseFinalizeFunc) NULL,
-	(GClassInitFunc) egg_tray_manager_class_init,
-	NULL, /* class_finalize */
-	NULL, /* class_data */
-	sizeof (EggTrayManager),
-	0,    /* n_preallocs */
-	(GInstanceInitFunc) egg_tray_manager_init
-      };
-
-      our_type = g_type_register_static (G_TYPE_OBJECT, "EggTrayManager", &our_info, 0);
-    }
-
-  return our_type;
-
-}
 
 static void
 egg_tray_manager_init (EggTrayManager *manager)
@@ -195,38 +172,30 @@ egg_tray_manager_plug_removed (GtkSocket       *socket,
 }
 
 static gboolean
-egg_tray_manager_socket_exposed (GtkWidget      *widget,
-      GdkEventExpose *event,
-      gpointer        user_data)
+egg_tray_manager_socket_draw (GtkWidget *widget,
+                              cairo_t   *cr)
 {
-    gdk_window_clear_area (gtk_widget_get_window (widget),
-          event->area.x, event->area.y,
-          event->area.width, event->area.height);
+    GtkStyleContext *context = gtk_widget_get_style_context (widget);
+    gint h = gtk_widget_get_allocated_height (widget);
+    gint w = gtk_widget_get_allocated_width (widget);
+    GdkRGBA bg_color;
+
+    gtk_style_context_get_background_color (context,
+                                            GTK_STATE_FLAG_NORMAL,
+                                            &bg_color);
+
+    cairo_set_source_rgba (cr,
+                           bg_color.red,
+                           bg_color.green,
+                           bg_color.blue,
+                           bg_color.alpha);
+
+    cairo_rectangle (cr, 0, 0, w, h);
+    cairo_fill (cr);
+
     return FALSE;
 }
 
-
-
-static void
-egg_tray_manager_make_socket_transparent (GtkWidget *widget,
-      gpointer   user_data)
-{
-    if (gtk_widget_get_has_window (widget))
-        return;
-    gdk_window_set_back_pixmap (gtk_widget_get_window (widget), NULL, TRUE);
-}
-
-
-
-static void
-egg_tray_manager_socket_style_set (GtkWidget *widget,
-      GtkStyle  *previous_style,
-      gpointer   user_data)
-{
-    if (gtk_widget_get_window (widget) == NULL || !gtk_widget_get_has_window (widget))
-        return;
-    egg_tray_manager_make_socket_transparent(widget, user_data);
-}
 
 static void
 egg_tray_manager_handle_dock_request(EggTrayManager *manager,
@@ -238,14 +207,9 @@ egg_tray_manager_handle_dock_request(EggTrayManager *manager,
     socket = gtk_socket_new ();
     gtk_widget_set_app_paintable (socket, TRUE);
     gtk_widget_set_double_buffered (socket, FALSE);
-    gtk_widget_add_events (socket, GDK_EXPOSURE_MASK);
     
-    g_signal_connect (socket, "realize",
-          G_CALLBACK (egg_tray_manager_make_socket_transparent), NULL);
-    g_signal_connect (socket, "expose_event",
-          G_CALLBACK (egg_tray_manager_socket_exposed), NULL);
-    g_signal_connect_after (socket, "style_set",
-          G_CALLBACK (egg_tray_manager_socket_style_set), NULL);
+    g_signal_connect (socket, "draw",
+          G_CALLBACK (egg_tray_manager_socket_draw), NULL);
     gtk_widget_show (socket);
 
 
@@ -269,14 +233,14 @@ egg_tray_manager_handle_dock_request(EggTrayManager *manager,
               G_CALLBACK(egg_tray_manager_plug_removed), manager);
 
         gdk_error_trap_push();
-        XGetWindowAttributes(GDK_DISPLAY(), *window, &wa);
+        XGetWindowAttributes(GDK_DISPLAY_XDISPLAY (gdk_display_get_default ()), *window, &wa);
         if (gdk_error_trap_pop()) {
             goto error;
         }
         g_hash_table_insert(manager->socket_table,
             GINT_TO_POINTER(xevent->data.l[2]), socket);
         req.width = req.height = 1;
-        gtk_widget_size_request(socket, &req);
+        gtk_widget_get_preferred_size (socket, &req, NULL);
         return;
     }
 error:    
@@ -418,6 +382,8 @@ egg_tray_manager_window_filter (GdkXEvent *xev, GdkEvent *event, gpointer data)
   XEvent *xevent = (GdkXEvent *)xev;
   EggTrayManager *manager = data;
 
+  (void) event; /* Unused, avoid compiler warning */
+
   if (xevent->type == ClientMessage)
     {
       if (xevent->xclient.message_type == manager->opcode_atom)
@@ -456,7 +422,7 @@ egg_tray_manager_unmanage (EggTrayManager *manager)
   display = GDK_WINDOW_XDISPLAY (gtk_widget_get_window (invisible));
   
   if (XGetSelectionOwner (display, manager->selection_atom) ==
-      GDK_WINDOW_XWINDOW (gtk_widget_get_window (invisible)))
+      gdk_x11_window_get_xid (gtk_widget_get_window (invisible)))
     {
       timestamp = gdk_x11_get_server_time (gtk_widget_get_window (invisible));
       XSetSelectionOwner (display, manager->selection_atom, None, timestamp);
@@ -506,11 +472,11 @@ egg_tray_manager_manage_xscreen (EggTrayManager *manager, Screen *xscreen)
   invwindow = gtk_widget_get_window (invisible);
   timestamp = gdk_x11_get_server_time (invwindow);
   XSetSelectionOwner (DisplayOfScreen (xscreen), manager->selection_atom,
-		      GDK_WINDOW_XWINDOW (invwindow), timestamp);
+		      gdk_x11_window_get_xid (invwindow), timestamp);
 
   /* Check if we were could set the selection owner successfully */
   if (XGetSelectionOwner (DisplayOfScreen (xscreen), manager->selection_atom) ==
-      GDK_WINDOW_XWINDOW (invwindow))
+      gdk_x11_window_get_xid (invwindow))
     {
       XClientMessageEvent xev;
 
@@ -521,7 +487,7 @@ egg_tray_manager_manage_xscreen (EggTrayManager *manager, Screen *xscreen)
       xev.format = 32;
       xev.data.l[0] = timestamp;
       xev.data.l[1] = manager->selection_atom;
-      xev.data.l[2] = GDK_WINDOW_XWINDOW (invwindow);
+      xev.data.l[2] = gdk_x11_window_get_xid (invwindow);
       xev.data.l[3] = 0;	/* manager specific data */
       xev.data.l[4] = 0;	/* manager specific data */
 
@@ -607,12 +573,12 @@ egg_tray_manager_get_child_title (EggTrayManager *manager,
   child_window = g_object_get_data (G_OBJECT (child),
         "egg-tray-child-window");
   
-  utf8_string = XInternAtom (GDK_DISPLAY (), "UTF8_STRING", False);
-  atom = XInternAtom (GDK_DISPLAY (), "_NET_WM_NAME", False);
+  utf8_string = XInternAtom (GDK_DISPLAY_XDISPLAY (gdk_display_get_default ()), "UTF8_STRING", False);
+  atom = XInternAtom (GDK_DISPLAY_XDISPLAY (gdk_display_get_default ()), "_NET_WM_NAME", False);
   
   gdk_error_trap_push();
 
-  result = XGetWindowProperty (GDK_DISPLAY (), *child_window, atom, 0,
+  result = XGetWindowProperty (GDK_DISPLAY_XDISPLAY (gdk_display_get_default ()), *child_window, atom, 0,
         G_MAXLONG, False, utf8_string, &type, &format, &nitems,
         &bytes_after, &tmp);
   val = (gchar *) tmp;

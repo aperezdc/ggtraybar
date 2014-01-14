@@ -1,6 +1,6 @@
 /*
  * ggt-gadget-clock.c
- * Copyright (C) 2010 Adrian Perez <aperez@igalia.com>
+ * Copyright (C) 2010-2014 Adrian Perez <aperez@igalia.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -72,10 +72,12 @@ on_calendar_toggle (GtkToggleButton *button, GtkWidget *calendar)
     g_assert (calendar);
 
     if (gtk_toggle_button_get_active (button)) {
+        GtkAllocation allocation;
         gtk_window_set_position (GTK_WINDOW (calendar), GTK_WIN_POS_MOUSE);
         gtk_widget_show_all (calendar);
         gtk_window_get_position (GTK_WINDOW (calendar), &x, &y);
-        gtk_window_move (GTK_WINDOW (calendar), x, GGT_HEIGHT);
+        gtk_widget_get_allocation (GTK_WIDGET (button), &allocation);
+        gtk_window_move (GTK_WINDOW (calendar), x, allocation.height);
     }
     else
         gtk_widget_hide (calendar);
@@ -130,6 +132,7 @@ ggt_clock_init (GGTraybar *app)
                       NULL);
 
     gtk_widget_set_has_tooltip (button, TRUE);
+    gtk_window_set_attached_to (GTK_WINDOW (calwin), button);
 
     g_timeout_add (1000 * 15, (GSourceFunc) clock_tick_update, button);
 

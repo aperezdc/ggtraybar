@@ -1,6 +1,6 @@
 /*
  * ggt.c
- * Copyright (C) 2010 Adrian Perez <aperez@igalia.com>
+ * Copyright (C) 2010-2014 Adrian Perez <aperez@igalia.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -18,29 +18,24 @@
  * Boston, MA 02111-1307, USA.
  */
 
+#define WNCK_I_KNOW_THIS_IS_UNSTABLE /* Needed for Wnck :P */
+
 #include "ggt.h"
+#include <libwnck/libwnck.h>
+#include <keybinder.h>
 #include <stdlib.h>
 #include <string.h>
 
 
-static GdkAtom a_GLOBALMENU_SETTINGS  = 0;
 static GdkAtom a_NET_WM_STRUT_PARTIAL = 0;
 static GdkAtom a_NET_WM_STRUT         = 0;
 static GdkAtom a_CARDINAL             = 0;
 static GdkAtom a_STRING               = 0;
 
 
-#define GLOBALMENU_ROOT_WINDOW_PAYLOAD "\n" \
-    "[GlobalMenu:Client]\n"                 \
-    "show-local-menu=false\n"               \
-    "show-menu-icons=true\n"                \
-    "changed-notify-timeout=500\n"
-
-
 static void
 intern_atoms (void)
 {
-    a_GLOBALMENU_SETTINGS  = gdk_atom_intern_static_string ("_NET_GLOBALMENU_SETTINGS");
     a_NET_WM_STRUT_PARTIAL = gdk_atom_intern_static_string ("_NET_WM_STRUT_PARTIAL");
     a_NET_WM_STRUT         = gdk_atom_intern_static_string ("_NET_WM_STRUT");
     a_CARDINAL             = gdk_atom_intern_static_string ("CARDINAL");
@@ -77,13 +72,15 @@ set_window_properties (GGTraybar *app)
 {
     GdkWindow *window;
     gulong data[NET_WM_STRUT_NELEM];
+    gint window_height;
 
     g_assert (app);
 
+    gtk_window_get_size (GTK_WINDOW (app->window), NULL, &window_height);
     window = gtk_widget_get_window (GTK_WIDGET (app->window));
     memset (data, 0x00, sizeof (gulong) * NET_WM_STRUT_NELEM);
 
-    data[NET_WM_STRUT_TOP]         = GGT_HEIGHT;
+    data[NET_WM_STRUT_TOP]         = window_height;
     data[NET_WM_STRUT_TOP_START_X] = app->primary_monitor.x;
     data[NET_WM_STRUT_TOP_END_X]   = app->primary_monitor.x
                                    + app->primary_monitor.width - 1;
@@ -101,13 +98,6 @@ set_window_properties (GGTraybar *app)
                          GDK_PROP_MODE_REPLACE,
                          (const guchar*) data,
                          NET_WM_STRUT_COMPAT_NELEM);
-
-    gdk_property_change (gdk_get_default_root_window (),
-                         a_GLOBALMENU_SETTINGS,
-                         a_STRING, 8,
-                         GDK_PROP_MODE_REPLACE,
-                         (const guchar*) GLOBALMENU_ROOT_WINDOW_PAYLOAD,
-                         sizeof (GLOBALMENU_ROOT_WINDOW_PAYLOAD));
 
     gtk_window_move (GTK_WINDOW (app->window), app->primary_monitor.x, 0);
     gdk_display_sync (gtk_widget_get_display (GTK_WIDGET (app->window)));
@@ -129,20 +119,34 @@ on_monitors_changed (GdkScreen *screen, gpointer data)
     gtk_widget_set_size_request (app->window,
                                  app->primary_monitor.width,
                                  GGT_HEIGHT);
+    gtk_window_set_default_size (GTK_WINDOW (app->window),
+                                 app->primary_monitor.width,
+                                 GGT_HEIGHT);
+    gtk_window_resize           (GTK_WINDOW (app->window),
+                                 app->primary_monitor.width,
+                                 GGT_HEIGHT);
 
     set_window_properties (app);
 }
 
 
+static void
+on_window_map_event (GtkWidget *window, GdkEvent *event, gpointer data)
+{
+    GGTraybar *app = (GGTraybar*) data;
+
+    set_window_properties (app);
+}
+
 
 int
 main (int argc, char **argv)
 {
-    GtkWidget *hbox;
     GGTraybar app;
 
-    g_type_init ();
     gtk_init (&argc, &argv);
+    keybinder_init ();
+    wnck_set_client_type (WNCK_CLIENT_TYPE_PAGER);
 
     memset (&app, 0x00, sizeof (GGTraybar));
 
@@ -159,8 +163,7 @@ main (int argc, char **argv)
      *
      * Why? Because I want them that way... and less is more :-)
      */
-    hbox = gtk_hbox_new (FALSE, 0);
-
+    app.content = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
 
 #define GADGET(_box, _pos, _gad)                                             \
     do {                                                                     \
@@ -169,23 +172,19 @@ main (int argc, char **argv)
             gtk_box_pack_ ## _pos (GTK_BOX (_box), gadget, FALSE, FALSE, 0); \
     } while (0)
 
-    app.content = ggt_globalmenu_init (&app);
-    g_object_ref (app.content);
-
-    GADGET (hbox, start, app.content);
-    GADGET (hbox, end,   ggt_clock_init    (&app));
-    GADGET (hbox, end,   ggt_tray_init     (&app));
-    GADGET (hbox, end,   ggt_pager_init    (&app));
-    GADGET (hbox, start, ggt_launcher_init (&app));
-
-    g_object_ref (app.content);
+    GADGET (app.content, start, ggt_winsel_init   (&app));
+    GADGET (app.content, start, ggt_winlist_init  (&app));
+    GADGET (app.content, end,   ggt_clock_init    (&app));
+    GADGET (app.content, end,   ggt_tray_init     (&app));
+    /* GADGET (app.content, end,   ggt_pager_init    (&app)); */
+    GADGET (app.content, start, ggt_launcher_init (&app));
 
     /*
      * Finished adding widgets to the panel.
      * Now add the container to the window.
      */
     gtk_container_add (GTK_CONTAINER (app.window),
-                       GTK_WIDGET (hbox));
+                       GTK_WIDGET (app.content));
 
     /*
      * This makes the panel use the same GtkRc styles than those used by the
@@ -200,13 +199,18 @@ main (int argc, char **argv)
     gtk_widget_realize  (app.window);
     intern_atoms        ();
     on_monitors_changed (gtk_widget_get_screen (app.window), &app);
-    gtk_widget_show_all (app.window);
 
     g_signal_connect (G_OBJECT (gtk_widget_get_screen (app.window)),
                       "monitors_changed",
                       G_CALLBACK (on_monitors_changed),
                       &app);
 
+    g_signal_connect (G_OBJECT (app.window),
+                      "map-event",
+                      G_CALLBACK (on_window_map_event),
+                      &app);
+
+    gtk_widget_show_all (app.window);
     gtk_main ();
 
     return EXIT_SUCCESS;

@@ -6,13 +6,13 @@
 SRCS := $(wildcard *.c)
 OBJS := $(patsubst %.c,%.o,$(SRCS))
 
-PKG_MODULE := glib-2.0 gtk+-2.0 globalmenu-server libwnck-1.0 gtkhotkey-1.0
+PKG_MODULE := glib-2.0 gtk+-3.0 gtk+-x11-3.0 libwnck-3.0 keybinder-3.0 x11
 
 PKG_CFLAGS := $(shell pkg-config $(PKG_MODULE) --cflags)
 PKG_LDLIBS := $(shell pkg-config $(PKG_MODULE) --libs)
 
-LDFLAGS   += $(subst -lserver,-lglobalmenu-server,$(PKG_LDLIBS))
-CFLAGS    += $(PKG_CFLAGS) \
+LDFLAGS   += $(PKG_LDLIBS)
+CFLAGS    += $(PKG_CFLAGS) $(OPT_CFLAGS) \
 						 -DGSEAL_ENABLE \
 						 -DGTK_DISABLE_DEPRECATED \
 						 -DGDK_DISABLE_DEPRECATED \

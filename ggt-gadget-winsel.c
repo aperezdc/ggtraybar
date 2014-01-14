@@ -1,6 +1,6 @@
 /*
- * ggt-gadget-globalmenu.c
- * Copyright (C) 2010 Adrian Perez <aperez@igalia.com>
+ * ggt-gadget-winsel.c
+ * Copyright (C) 2014 Adrian Perez <aperez@igalia.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -18,16 +18,15 @@
  * Boston, MA 02111-1307, USA.
  */
 
+#define WNCK_I_KNOW_THIS_IS_UNSTABLE /* Needed for Wnck :P */
+
 #include "ggt.h"
-#include <gnome-globalmenu/globalmenu-server.h>
-
-
+#include <libwnck/libwnck.h>
 
 GtkWidget*
-ggt_globalmenu_init (GGTraybar *app)
+ggt_winsel_init (GGTraybar *app)
 {
     g_assert (app);
-
-    return GTK_WIDGET (gnomenu_global_menu_bar_new ());
+    return wnck_selector_new ();
 }
 

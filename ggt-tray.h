@@ -1,6 +1,6 @@
 /*
- * ggt-gadget-pager.c
- * Copyright (C) 2010-2014 Adrian Perez <aperez@igalia.com>
+ * ggt-tray.h
+ * Copyright (C) 2014 Adrian Perez <aperez@igalia.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -18,22 +18,24 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#define WNCK_I_KNOW_THIS_IS_UNSTABLE /* Needed for Wnck :P */
+#ifndef GGT_TRAY_H
+#define GGT_TRAY_H
 
-#include "ggt.h"
-#include <libwnck/libwnck.h>
+#include <gtk/gtk.h>
 
-GtkWidget*
-ggt_pager_init (GGTraybar *app)
-{
-    GtkWidget *pager;
-    g_assert (app);
+G_BEGIN_DECLS
 
-    pager = wnck_pager_new ();
-    wnck_pager_set_display_mode (WNCK_PAGER (pager), WNCK_PAGER_DISPLAY_CONTENT);
-    wnck_pager_set_orientation (WNCK_PAGER (pager), GTK_ORIENTATION_HORIZONTAL);
-    wnck_pager_set_show_all (WNCK_PAGER (pager), TRUE);
-    wnck_pager_set_n_rows (WNCK_PAGER (pager), 1);
-    gtk_widget_set_size_request (pager, 0, 0);
-    return pager;
-}
+#define GGT_TYPE_TRAY         (ggt_tray_get_type ())
+#define GGT_TRAY(obj)         (G_TYPE_CHECK_INSTANCE_CAST ((obj), GGT_TYPE_TRAY, GgtTray))
+#define GGT_TRAY_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GGT_TYPE_TRAY, GgtTrayClass)
+#define GGT_IS_TRAY(obj)      (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GGT_TYPE_TRAY))
+
+typedef struct _GgtTrayClass GgtTrayClass;
+typedef struct _GgtTray      GgtTray;
+
+GType      ggt_tray_get_type (void);
+GtkWidget *ggt_tray_new      (void);
+
+G_END_DECLS
+
+#endif /* !GGT_TRAY_H */
