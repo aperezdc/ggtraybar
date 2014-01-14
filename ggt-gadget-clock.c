@@ -92,6 +92,11 @@ on_tooltip_show (GtkWidget  *button,
                  GtkTooltip *tooltip,
                  gpointer    data)
 {
+    UNUSED (x);
+    UNUSED (y);
+    UNUSED (keyboardmode);
+    UNUSED (data);
+
     char buf[60];
     time_t tnow;
     struct tm *now;

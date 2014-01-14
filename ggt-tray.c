@@ -57,6 +57,8 @@ tray_changed (GgtTray *tray)
 static void
 tray_icon_added (EggTrayManager *manager, GtkWidget *icon, GgtTray *tray)
 {
+    UNUSED (manager);
+
     gtk_box_pack_end (GTK_BOX (tray->box), icon, FALSE, FALSE, 0);
     gtk_widget_show (icon);
     tray_changed (tray);
@@ -66,6 +68,9 @@ tray_icon_added (EggTrayManager *manager, GtkWidget *icon, GgtTray *tray)
 static void
 tray_icon_removed (EggTrayManager *manager, GtkWidget *icon, GgtTray *tray)
 {
+    UNUSED (manager);
+    UNUSED (icon);
+
     tray_changed (tray);
 }
 
@@ -112,6 +117,8 @@ ggt_tray_init (GgtTray *tray)
 static void
 count_children (GtkWidget *widget, gpointer data)
 {
+    UNUSED (widget);
+
     guint *nitems = (guint*) data;
     (*nitems)++;
 }

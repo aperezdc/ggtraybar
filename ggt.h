@@ -39,10 +39,12 @@
 #define NET_WM_STRUT_NELEM           12
 #define NET_WM_STRUT_COMPAT_NELEM     4
 
-
 #include <gtk/gtk.h>
 #include <gdk/gdk.h>
 
+#ifndef UNUSED
+#define UNUSED(v)  ((void) (v))
+#endif /* UNUSED */
 
 struct _GGTraybar {
     GtkWidget    *window;

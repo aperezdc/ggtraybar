@@ -139,8 +139,9 @@ on_monitors_changed (GdkScreen *screen, gpointer data)
 static void
 on_window_map_event (GtkWidget *window, GdkEvent *event, gpointer data)
 {
-    GGTraybar *app = (GGTraybar*) data;
-    set_window_properties (app);
+    UNUSED (window);
+    UNUSED (event);
+    set_window_properties ((GGTraybar*) data);
 }
 
 
