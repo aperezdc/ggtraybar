@@ -24,7 +24,7 @@
 #include <libwnck/libwnck.h>
 
 GtkWidget*
-ggt_pager_init (GGTraybar *app)
+ggt_pager_new (GGTraybar *app)
 {
     GtkWidget *pager;
     g_assert (app);

@@ -111,7 +111,7 @@ on_entry_key_release (GtkWidget *entry, GdkEventKey *event, GGTraybar *app)
 
 
 GtkWidget*
-ggt_launcher_init (GGTraybar *app)
+ggt_launcher_new (GGTraybar *app)
 {
     GtkWidget *hbox   = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 5);
     GtkWidget *label  = gtk_label_new ("Command:");

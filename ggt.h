@@ -21,10 +21,6 @@
 #ifndef __ggtraybar_h__
 #define __ggtraybar_h__
 
-#ifndef GGT_HEIGHT
-#define GGT_HEIGHT 20
-#endif /* !GGT_HEIGHT */
-
 /*
  * Defines for setting _NET_WM_STRUT(_PARTIAL)
  */
@@ -56,13 +52,11 @@ struct _GGTraybar {
 typedef struct _GGTraybar GGTraybar;
 
 
-GtkWidget* ggt_tray_init       (GGTraybar *app);
-GtkWidget* ggt_winsel_init     (GGTraybar *app);
-GtkWidget* ggt_winlist_init    (GGTraybar *app);
-GtkWidget* ggt_clock_init      (GGTraybar *app);
-GtkWidget* ggt_pager_init      (GGTraybar *app);
-GtkWidget* ggt_launcher_init   (GGTraybar *app);
-
+GtkWidget* ggt_winsel_new     (GGTraybar *app);
+GtkWidget* ggt_winlist_new    (GGTraybar *app);
+GtkWidget* ggt_clock_new      (GGTraybar *app);
+GtkWidget* ggt_pager_new      (GGTraybar *app);
+GtkWidget* ggt_launcher_new   (GGTraybar *app);
 
 #endif /* !__ggtraybar_h__ */
 

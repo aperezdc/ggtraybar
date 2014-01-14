@@ -111,7 +111,7 @@ on_tooltip_show (GtkWidget  *button,
 
 
 GtkWidget*
-ggt_clock_init (GGTraybar *app)
+ggt_clock_new (GGTraybar *app)
 {
     GtkWidget *button = gtk_toggle_button_new_with_label ("HH:MM");
     GtkWidget *calwin = make_calendar_window ();

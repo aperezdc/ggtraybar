@@ -18,6 +18,7 @@
  * Boston, MA 02111-1307, USA.
  */
 
+#include "ggt.h"
 #include "ggt-tray.h"
 #include "eggtraymanager.h"
 

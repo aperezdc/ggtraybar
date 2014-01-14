@@ -21,6 +21,7 @@
 #define WNCK_I_KNOW_THIS_IS_UNSTABLE /* Needed for Wnck :P */
 
 #include "ggt.h"
+#include "ggt-tray.h"
 #include <libwnck/libwnck.h>
 #include <keybinder.h>
 #include <stdlib.h>
@@ -76,7 +77,15 @@ set_window_properties (GGTraybar *app)
 
     g_assert (app);
 
+    gtk_widget_set_size_request (app->window,
+                                 app->primary_monitor.width,
+                                 0);
+    gtk_window_set_default_size (GTK_WINDOW (app->window),
+                                 app->primary_monitor.width,
+                                 0);
+
     gtk_window_get_size (GTK_WINDOW (app->window), NULL, &window_height);
+
     window = gtk_widget_get_window (GTK_WIDGET (app->window));
     memset (data, 0x00, sizeof (gulong) * NET_WM_STRUT_NELEM);
 
@@ -99,8 +108,15 @@ set_window_properties (GGTraybar *app)
                          (const guchar*) data,
                          NET_WM_STRUT_COMPAT_NELEM);
 
-    gtk_window_move (GTK_WINDOW (app->window), app->primary_monitor.x, 0);
     gdk_display_sync (gtk_widget_get_display (GTK_WIDGET (app->window)));
+
+    gtk_window_move (GTK_WINDOW (app->window),
+                     app->primary_monitor.x,
+                     0);
+
+    gtk_window_resize (GTK_WINDOW (app->window),
+                       app->primary_monitor.width,
+                       window_height);
 }
 
 
@@ -116,16 +132,6 @@ on_monitors_changed (GdkScreen *screen, gpointer data)
                                      gdk_screen_get_primary_monitor (screen),
                                      &app->primary_monitor);
 
-    gtk_widget_set_size_request (app->window,
-                                 app->primary_monitor.width,
-                                 GGT_HEIGHT);
-    gtk_window_set_default_size (GTK_WINDOW (app->window),
-                                 app->primary_monitor.width,
-                                 GGT_HEIGHT);
-    gtk_window_resize           (GTK_WINDOW (app->window),
-                                 app->primary_monitor.width,
-                                 GGT_HEIGHT);
-
     set_window_properties (app);
 }
 
@@ -134,7 +140,6 @@ static void
 on_window_map_event (GtkWidget *window, GdkEvent *event, gpointer data)
 {
     GGTraybar *app = (GGTraybar*) data;
-
     set_window_properties (app);
 }
 
@@ -172,12 +177,12 @@ main (int argc, char **argv)
             gtk_box_pack_ ## _pos (GTK_BOX (_box), gadget, FALSE, FALSE, 0); \
     } while (0)
 
-    GADGET (app.content, start, ggt_winsel_init   (&app));
-    GADGET (app.content, start, ggt_winlist_init  (&app));
-    GADGET (app.content, end,   ggt_clock_init    (&app));
-    GADGET (app.content, end,   ggt_tray_init     (&app));
-    /* GADGET (app.content, end,   ggt_pager_init    (&app)); */
-    GADGET (app.content, start, ggt_launcher_init (&app));
+    GADGET (app.content, start, wnck_selector_new ());
+    GADGET (app.content, start, ggt_winlist_new   (&app));
+    GADGET (app.content, end,   ggt_clock_new     (&app));
+    GADGET (app.content, end,   ggt_tray_new      ());
+    /* GADGET (app.content, end,   ggt_pager_new    (&app)); */
+    GADGET (app.content, start, ggt_launcher_new (&app));
 
     /*
      * Finished adding widgets to the panel.

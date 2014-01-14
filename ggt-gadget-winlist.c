@@ -24,7 +24,7 @@
 #include <libwnck/libwnck.h>
 
 GtkWidget*
-ggt_winlist_init (GGTraybar *app)
+ggt_winlist_new (GGTraybar *app)
 {
     GtkWidget *winlist = wnck_tasklist_new ();
 
