@@ -1,7 +1,0 @@
-#! /usr/bin/make -f
-
-export prefix = /usr
-
-%:
-	dh $@
-
