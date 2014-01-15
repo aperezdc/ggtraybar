@@ -1,5 +1,7 @@
-/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-/* eggtraymanager.h
+/*
+ * eggtraymanager.h
+ *
+ * Copyright (C) 2014 Adrian Perez de Castro <aperez@igalia.com>
  * Copyright (C) 2002 Anders Carlsson <andersca@gnu.org>
  *
  * This library is free software; you can redistribute it and/or
@@ -26,13 +28,13 @@
 
 G_BEGIN_DECLS
 
-#define EGG_TYPE_TRAY_MANAGER			(egg_tray_manager_get_type ())
-#define EGG_TRAY_MANAGER(obj)			(G_TYPE_CHECK_INSTANCE_CAST ((obj), EGG_TYPE_TRAY_MANAGER, EggTrayManager))
-#define EGG_TRAY_MANAGER_CLASS(klass)		(G_TYPE_CHECK_CLASS_CAST ((klass), EGG_TYPE_TRAY_MANAGER, EggTrayManagerClass))
-#define EGG_IS_TRAY_MANAGER(obj)		(G_TYPE_CHECK_INSTANCE_TYPE ((obj), EGG_TYPE_TRAY_MANAGER))
+#define EGG_TYPE_TRAY_MANAGER             (egg_tray_manager_get_type ())
+#define EGG_TRAY_MANAGER(obj)             (G_TYPE_CHECK_INSTANCE_CAST ((obj), EGG_TYPE_TRAY_MANAGER, EggTrayManager))
+#define EGG_TRAY_MANAGER_CLASS(klass)     (G_TYPE_CHECK_CLASS_CAST ((klass), EGG_TYPE_TRAY_MANAGER, EggTrayManagerClass))
+#define EGG_IS_TRAY_MANAGER(obj)          (G_TYPE_CHECK_INSTANCE_TYPE ((obj), EGG_TYPE_TRAY_MANAGER))
 #define EGG_IS_TRAY_MANAGER_CLASS(klass)	(G_TYPE_CHECK_CLASS_TYPE ((klass), EGG_TYPE_TRAY_MANAGER))
 #define EGG_TRAY_MANAGER_GET_CLASS(obj)		(G_TYPE_INSTANCE_GET_CLASS ((obj), EGG_TYPE_TRAY_MANAGER, EggTrayManagerClass))
-	
+
 typedef struct _EggTrayManager	     EggTrayManager;
 typedef struct _EggTrayManagerClass  EggTrayManagerClass;
 typedef struct _EggTrayManagerChild  EggTrayManagerChild;
@@ -44,7 +46,7 @@ struct _EggTrayManager
   Atom opcode_atom;
   Atom selection_atom;
   Atom message_data_atom;
-  
+
   GtkWidget *invisible;
   GdkScreen *screen;
 
@@ -57,19 +59,19 @@ struct _EggTrayManagerClass
   GObjectClass parent_class;
 
   void (* tray_icon_added)   (EggTrayManager      *manager,
-			      EggTrayManagerChild *child);
+                              EggTrayManagerChild *child);
   void (* tray_icon_removed) (EggTrayManager      *manager,
-			      EggTrayManagerChild *child);
+                              EggTrayManagerChild *child);
 
   void (* message_sent)      (EggTrayManager      *manager,
-			      EggTrayManagerChild *child,
-			      const gchar         *message,
-			      glong                id,
-			      glong                timeout);
-  
+                              EggTrayManagerChild *child,
+                              const gchar         *message,
+                              glong                id,
+                              glong                timeout);
+
   void (* message_cancelled) (EggTrayManager      *manager,
-			      EggTrayManagerChild *child,
-			      glong                id);
+                              EggTrayManagerChild *child,
+                              glong                id);
 
   void (* lost_selection)    (EggTrayManager      *manager);
 };
@@ -79,9 +81,9 @@ GType           egg_tray_manager_get_type        (void);
 gboolean        egg_tray_manager_check_running   (GdkScreen           *screen);
 EggTrayManager *egg_tray_manager_new             (void);
 gboolean        egg_tray_manager_manage_screen   (EggTrayManager      *manager,
-						  GdkScreen           *screen);
-char           *egg_tray_manager_get_child_title (EggTrayManager      *manager,
-						  EggTrayManagerChild *child);
+                                                  GdkScreen           *screen);
+gchar          *egg_tray_manager_get_child_title (EggTrayManager      *manager,
+                                                  EggTrayManagerChild *child);
 
 G_END_DECLS
 
