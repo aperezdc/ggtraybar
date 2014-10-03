@@ -69,53 +69,6 @@ make_app (BamfApplication *application,
 
 
 static void
-dump_indent (guint level)
-{
-  while (level--)
-    g_printerr ("  ");
-}
-
-
-static void
-dump_menu_model (guint level, GMenuModel *menu)
-{
-  if (!menu) {
-    dump_indent (level);
-    g_printerr ("(no menu model)\n");
-    return;
-  }
-
-  for (gint i = 0; i < g_menu_model_get_n_items (menu); i++) {
-    dump_indent (level);
-    g_printerr ("Attributes:\n");
-    dg_lobj GMenuAttributeIter *attriter = g_menu_model_iterate_item_attributes (menu, i);
-    while (g_menu_attribute_iter_next (attriter)) {
-      dump_indent (level + 1);
-      g_printerr (" - %s\n", g_menu_attribute_iter_get_name (attriter));
-    }
-
-    dump_indent (level);
-    g_printerr ("Link [%u]:\n", i);
-    dg_lobj GMenuLinkIter *linkiter = g_menu_model_iterate_item_links (menu, i);
-    while (g_menu_link_iter_next (linkiter)) {
-      dg_lobj GMenuModel *submodel = g_menu_link_iter_get_value (linkiter);
-      dump_menu_model (level + 1, submodel);
-    }
-  }
-}
-
-
-static void
-dump_current_app (const Application *app)
-{
-  g_printerr ("Current application: %#x %s\n", app->app_xid, app->app_name);
-  g_printerr ("  Unique bus name: %s\n", app->unique_bus_name);
-  g_printerr ("  App menu object: %s\n", app->app_menu_object_path);
-  /* dump_menu_model (1, app->app_menu_model); */
-}
-
-
-static void
 on_active_window_changed (BamfMatcher *matcher,
                           BamfWindow  *window1,
                           BamfWindow  *window2,
@@ -136,7 +89,6 @@ on_active_window_changed (BamfMatcher *matcher,
   }
   g_assert (app);
   current_app = app;
-  dump_current_app (app);
   gtk_button_set_label (GTK_BUTTON (button),
                         app->app_name);
 }
