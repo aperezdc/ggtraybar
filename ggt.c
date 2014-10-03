@@ -179,11 +179,11 @@ main (int argc, char **argv)
             gtk_box_pack_ ## _pos (GTK_BOX (_box), gadget, FALSE, FALSE, 0); \
     } while (0)
 
-    GADGET (app.content, start, wnck_selector_new ());
-    GADGET (app.content, start, ggt_winlist_new   (&app));
-    GADGET (app.content, end,   ggt_clock_new     (&app));
-    GADGET (app.content, end,   ggt_tray_new      ());
-    /* GADGET (app.content, end,   ggt_pager_new    (&app)); */
+    GADGET (app.content, start, ggt_appmenu_new ()    );
+    GADGET (app.content, end,   ggt_clock_new   (&app));
+    GADGET (app.content, end,   ggt_tray_new    ()    );
+    GADGET (app.content, end,   ggt_winlist_new (&app));
+    /* GADGET (app.content, end,   ggt_pager_new   (&app)); */
     ggt_launcher_new ("<Alt>F2", GTK_WINDOW (app.window));
 
     /*

@@ -9,6 +9,8 @@ it has the following features:
 
 - Command launcher bound globally to "Alt-F2", like the GNOME run dialog.
 
+- Application menu. Useful for new GNOME applications.
+
 - Task list.
 
 - Pager with desktop previews like the one in the GNOME Panel.

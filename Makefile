@@ -6,7 +6,8 @@
 SRCS := $(wildcard *.c) eggmarshalers.c
 OBJS := $(patsubst %.c,%.o,$(SRCS))
 
-PKG_MODULE := glib-2.0 gtk+-3.0 gtk+-x11-3.0 libwnck-3.0 keybinder-3.0 x11
+PKG_MODULE := glib-2.0 gtk+-3.0 gtk+-x11-3.0 libwnck-3.0 keybinder-3.0 x11 \
+              libbamf3 gio-2.0
 
 PKG_CFLAGS := $(shell pkg-config $(PKG_MODULE) --cflags)
 PKG_LDLIBS := $(shell pkg-config $(PKG_MODULE) --libs)

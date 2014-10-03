@@ -12,7 +12,9 @@ pkgs = (
     "gtk+-x11-3.0",
     "libwnck-3.0",
     "keybinder-3.0",
-    "x11"
+    "x11",
+    "libbamf3",
+    "gio-2.0",
 )
 
 from subprocess import check_output

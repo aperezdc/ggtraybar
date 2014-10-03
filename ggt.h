@@ -58,6 +58,7 @@ GtkWidget* ggt_winsel_new     (GGTraybar *app);
 GtkWidget* ggt_winlist_new    (GGTraybar *app);
 GtkWidget* ggt_clock_new      (GGTraybar *app);
 GtkWidget* ggt_pager_new      (GGTraybar *app);
+GtkWidget* ggt_appmenu_new    (void);
 
 #endif /* !__ggtraybar_h__ */
 
