@@ -24,7 +24,6 @@ typedef struct {
 
 
 static GHashTable *app_by_xid = NULL;
-static Application *current_app = NULL;
 
 
 static Application*
@@ -88,35 +87,18 @@ on_active_window_changed (BamfMatcher *matcher,
     g_hash_table_insert (app_by_xid, GINT_TO_POINTER (xid), app);
   }
   g_assert (app);
-  current_app = app;
   gtk_button_set_label (GTK_BUTTON (button),
                         app->app_name);
-}
-
-
-static void
-on_menu_button_clicked (GtkButton *button,
-                        gpointer  *userdata)
-{
-  if (!current_app)
-    return;
-
-  GtkWidget *menu = gtk_menu_new_from_model (current_app->app_menu_model);
-  g_object_ref_sink (menu);
-  gtk_menu_popup (GTK_MENU (menu),
-                  NULL,
-                  NULL,
-                  NULL,
-                  NULL,
-                  0,
-                  gtk_get_current_event_time ());
+  gtk_menu_button_set_menu_model (GTK_MENU_BUTTON (button),
+                                  app->app_menu_model);
 }
 
 
 GtkWidget*
-ggt_appmenu_new (void)
+ggt_appmenu_new (GGTraybar *app)
 {
-  GtkWidget *button = gtk_button_new_with_label ("(no app)");
+  GtkWidget *button = gtk_menu_button_new ();
+  gtk_menu_button_set_use_popover (GTK_MENU_BUTTON (button), FALSE);
 
   BamfMatcher *matcher = bamf_matcher_get_default ();
   app_by_xid = g_hash_table_new (g_direct_hash, g_direct_equal);
@@ -131,11 +113,6 @@ ggt_appmenu_new (void)
                             NULL,
                             bamf_matcher_get_active_window (matcher),
                             button);
-
-  g_signal_connect (button,
-                    "clicked",
-                    G_CALLBACK (on_menu_button_clicked),
-                    NULL);
 
   return button;
 }
